@@ -1,8 +1,7 @@
 module.exports = {
-    env: {
-        es6: true,
-        node: true,
-        jest: true,
+    'env': {
+        'browser': true,
+        'es6': true
     },
     'extends': [
         'eslint:recommended',
@@ -22,26 +21,26 @@ module.exports = {
         'ecmaVersion': 2018,
         'sourceType': 'module'
     },
-    plugins: [
+    'plugins': [
         'react',
         'react-hooks',
         '@typescript-eslint',
         'prettier'
     ],
     'rules': {
-        indent: [
+        'indent': [
             'error',
             2,
-            { SwitchCase: 1 }
+            {SwitchCase: 1}
         ],
         'linebreak-style': [
             'error',
             'unix'
         ],
-        quotes: [
+        'quotes': [
             'error',
             'single',
-            { avoidEscape: true }
+            {avoidEscape: true}
         ],
         'semi': [
             'error',
@@ -58,18 +57,5 @@ module.exports = {
         react: {
             version: 'detect',
         },
-    },
-    "lint-staged": {
-        "src/**/*.{ts,tsx}": [
-            "eslint --ext .tsx --ext .ts src/ --fix"
-        ],
-        "./src/**": [
-            "prettier --write ."
-        ]
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
-    },
+    }
 };

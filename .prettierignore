@@ -1,3 +1,8 @@
+*.jpg
+*.png
+*.gif
+*.svg
+
 # OSX
 #
 .DS_Store
@@ -88,7 +93,5 @@ buck-out/
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 .history
-
-*.jpg
 
 # End of https://www.toptal.com/developers/gitignore/api/linux,visualstudiocode
