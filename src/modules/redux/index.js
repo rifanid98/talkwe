@@ -14,12 +14,16 @@ import { AsyncStorage } from 'react-native';
 import auth from './auth/reducer';
 import users from './users/reducer';
 import apps from './apps/reducer';
+import friends from './friends/reducer';
+import messages from './messages/reducer';
 
 // Combine The Reducers
 const reducer = combineReducers({
   auth,
   users,
   apps,
+  friends,
+  messages
 });
 
 /**
@@ -28,7 +32,13 @@ const reducer = combineReducers({
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: ['auth', 'users', 'apps'],
+  whitelist: [
+    'auth',
+    'users',
+    'apps',
+    'friends',
+    'messages',
+  ],
 };
 
 const persistedReducer = persistReducer(persistConfig, reducer);
@@ -48,6 +58,8 @@ export const store = createStore(
 export * from './auth/actions';
 export * from './users/actions';
 export * from './apps/actions';
+export * from './friends/actions';
+export * from './messages/actions';
 
 /**
  * selector
