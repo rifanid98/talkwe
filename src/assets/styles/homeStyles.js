@@ -74,7 +74,8 @@ const homeStyles = StyleSheet.create({
   friendsListItemName: {
     textAlign: 'center',
     fontFamily: font.bodyBold,
-    fontSize: 20
+    fontSize: 20,
+    textTransform: 'capitalize'
   },
 
   // messages list
@@ -113,6 +114,7 @@ const homeStyles = StyleSheet.create({
   messagesListItemContentTitle: {
     fontFamily: font.bodyBold,
     fontSize: 20,
+    textTransform: 'capitalize'
   },
   messagesListItemContentText: {
     fontFamily: font.body,

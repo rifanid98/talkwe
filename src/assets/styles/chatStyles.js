@@ -46,7 +46,8 @@ const chatStyles = StyleSheet.create({
   },
   friendName: {
     fontFamily: font.bodyBold,
-    fontSize: 20
+    fontSize: 20,
+    textTransform: 'capitalize'
   },
   friendStatus: {
     fontFamily: font.body,

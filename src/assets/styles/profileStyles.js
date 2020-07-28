@@ -27,17 +27,26 @@ const profileStyles = StyleSheet.create({
     height: 200,
     width: 200,
     borderRadius: 200,
-    marginBottom: 12
+    marginBottom: 12,
+    borderWidth: 2,
+    borderColor: color.accent
   },
   name: {
     textAlign: 'center',
     fontFamily: font.heading,
-    fontSize: 27
+    fontSize: 27,
+    textTransform: 'capitalize'
+  },
+  email: {
+    textAlign: 'center',
+    fontFamily: font.body,
+    fontSize: 20,
   },
   location: {
     textAlign: 'center',
     fontFamily: font.body,
-    fontSize: 20
+    fontSize: 20,
+    textTransform: 'capitalize'
   },
 
   // lists
@@ -48,7 +57,8 @@ const profileStyles = StyleSheet.create({
     marginTop: 40
   },
   item: {
-    flexDirection: 'row'
+    flexDirection: 'row',
+    marginBottom: 12
   },
   itemIcon: {
     alignSelf: 'center'
