@@ -4,8 +4,85 @@ import { globalStyles as global, chatStyles as chat } from 'assets';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faEllipsisH, faArrowLeft, faCheckDouble, faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 import { ScrollView  } from 'react-native-gesture-handler';
+import { connect } from 'react-redux';
+import { getConversationsMessage, addMessage } from 'modules';
+import { createFormData } from 'utils';
+import { LoadingIcon } from 'components';
 
 class Chat extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      messages: [],
+      message: ''
+    }
+  }
+  componentDidMount() {
+    this.getMessage()
+  }
+  handleOnChange = (text, state) => {
+    this.setState({
+      ...this.state,
+      [state]: text
+    })
+  }
+  getMessage = () => {
+    const token = this.props.auth.data.tokenLogin;
+    const senderID = this.props.route.params.sender.id
+    const receiverID = this.props.auth.data.id
+    token
+      ? this.props.getConversationsMessage(token, senderID, receiverID)
+        .then((res) => {
+          this.setState({
+            ...this.state,
+            messages: this.props.messages.data
+          }, () => {
+              console.log(this.state.messages);
+          })
+        }).catch((error) => {
+          console.log(`get messages lists failed`)
+        })
+      : alert('Token Failed', 'Cannot find token...')
+  }
+  getNewMessage = () => {
+    const token = this.props.auth.data.tokenLogin;
+    const senderID = this.props.route.params.sender.id
+    const receiverID = this.props.auth.data.id
+    token
+      ? this.props.getConversationsMessage(token, senderID, receiverID)
+        .then((res) => {
+          this.setState({
+            ...this.state,
+            messages: this.props.messages.data
+          }, () => {
+            console.log(this.state.messages);
+          })
+        }).catch((error) => {
+          console.log(`get messages lists failed`)
+        })
+      : alert('Token Failed', 'Cannot find token...')
+  }
+  sendMessage = () => {
+    const token = this.props.auth.data.tokenLogin;
+    const senderID = this.props.auth.data.id;
+    const receiverID = this.props.route.params.sender.id;
+    const message = this.state.message;
+    const data = {
+      sender_id: senderID,
+      receiver_id: receiverID,
+      message: message
+    }
+    const formData = createFormData(data);
+    token
+      ? this.props.addMessage(token, formData)
+        .then((res) => {
+          this.handleOnChange('', 'message')
+          this.getMessage()
+        }).catch((error) => {
+          console.log(`send message failed`)
+        })
+      : alert('Token Failed', 'Cannot find token...')
+  }
   render() {
     return (
       <>
@@ -15,15 +92,15 @@ class Chat extends Component {
             <Text style={chat.menuButton}> <FontAwesomeIcon icon={faArrowLeft} size={20} /> </Text>
             <TouchableOpacity
               style={chat.friend}
-              onPress={() => this.props.navigation.navigate('profile')}
+              onPress={() => this.props.navigation.navigate('friendProfile', {senderID: this.props.route.params.sender.id})}
             >
               <Image
                 style={chat.friendImage}
-                source={{ uri: 'https://reactnative.dev/img/tiny_logo.png' }}
+                source={{ uri: this.props.route.params.sender.image }}
               />
               <View style={chat.friendInfo}>
-                <Text style={chat.friendName}>Anne</Text>
-                <Text style={chat.friendStatus}>Active Now</Text>
+                <Text style={chat.friendName}>{this.props.route.params.sender.full_name}</Text>
+                <Text style={chat.friendStatus}>{this.props.route.params.sender.online === 0 ? 'Offline' : 'Active Now'}</Text>
               </View>
             </TouchableOpacity>
             {/* <Text style={chat.menuButton}> <FontAwesomeIcon icon={faEllipsisH} size={20} /> </Text> */}
@@ -36,18 +113,18 @@ class Chat extends Component {
             }}
           >
             {
-              [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(data => {
-                if (data % 2 === 0) {
+              this.state.messages.map(message => {
+                if (message.sender_id !== this.props.auth.data.id) {
                   return (
                     <View
-                      key={data}
+                      key={message.id}
                       style={chat.sender}>
                       <Image
                         style={chat.senderImage}
-                        source={{ uri: 'https://reactnative.dev/img/tiny_logo.png' }}
+                        source={{ uri: this.props.route.params.sender.image }}
                       />
                       <View style={chat.senderMessage}>
-                        <Text style={chat.senderText}>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam eius quo vel delectus totam iste, iure soluta eligendi ipsam consectetur hic volupta</Text>
+                        <Text style={chat.senderText}>{message.message}</Text>
                         <Text style={chat.timestamp}>20.35</Text>
                       </View>
                     </View>
@@ -55,10 +132,10 @@ class Chat extends Component {
                 } else {
                   return (
                     <View
-                      key={data}
+                      key={message.id}
                       style={chat.receiver}
                     >
-                      <Text style={chat.receiverMessage}>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam eius quo vel delectus totam iste, iure soluta eligendi ipsam consectetur hic volupta</Text>
+                      <Text style={chat.receiverMessage}>{message.message}</Text>
                       <View style={{
                         flexDirection: 'row',
                         justifyContent: 'flex-end'
@@ -74,13 +151,22 @@ class Chat extends Component {
           </ScrollView>
           {/* footer */}
           <View style={chat.footer}>
-            <TextInput 
+            <TextInput
               style={chat.input}
               placeholder="Type a message..."
               multiline={true}
+              onChangeText={(text) => this.handleOnChange(text, 'message')}
+              value={this.state.message}
             />
-            <Text style={chat.sendButton}>
-                <FontAwesomeIcon style={chat.sendButtonIcon} icon={faPaperPlane} size={25}  />
+            <Text
+              style={chat.sendButton}
+              onPress={() => this.state.message.length > 0 && this.sendMessage()}
+            >
+              {
+                this.props.messages.isLoading
+                  ? <LoadingIcon />
+                  : <FontAwesomeIcon style={chat.sendButtonIcon} icon={faPaperPlane} size={25} />
+              }
             </Text>
           </View>
         </View>  
@@ -89,4 +175,14 @@ class Chat extends Component {
   }
 }
 
-export default Chat;
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+  messages: state.messages,
+})
+
+const mapDispatchToProps = {
+  getConversationsMessage,
+  addMessage
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Chat);
