@@ -2,7 +2,9 @@ import React, { Component } from 'react'
 import { Text, View, TextInput, Button, Alert, Image } from "react-native";
 import { globalStyles as styles } from 'assets';
 import { Logo, FlashMessage, LoadingButton } from 'components';
-import { registerSchema } from 'utils';
+import { registerSchema, createFormData } from 'utils';
+import { connect } from 'react-redux';
+import { register } from 'modules';
 
 class Register extends Component {
   constructor(props) {
@@ -33,6 +35,33 @@ class Register extends Component {
       this.setState({
         ...this.state,
         error: ''
+      }, () => {
+        const formData = createFormData(data)
+        this.props.register(formData)
+          .then(res => {
+            if ('status' in res.value && parseInt(res.value.status) === 201) {
+              Alert.alert(
+                'Sign Up Success',
+                'Please login to continue',
+                [{ text: "Cancel", onPress: () => console.log("Cancel Pressed"), style: "cancel" },
+                  { text: "OK", onPress: () => this.props.navigation.goBack() }], { cancelable: false }
+              );
+            } else {
+              Alert.alert('Sign Up Failed', 'Please try again...')
+            }
+          })
+          .catch(error => {
+            console.log(error)
+            let errorMessage = 'Please try again';
+            if (error.response !== undefined) {
+              if (error.response.data) {
+                if (error.response.data.message) {
+                  errorMessage = error.response.data.message;
+                }
+              }
+            }
+            Alert.alert('Sign Up Failed', errorMessage)
+          });
       })
     } catch (error) {
       if (error) {
@@ -72,13 +101,18 @@ class Register extends Component {
               placeholder="Password"
               secureTextEntry={true}
             />
-            {/* <LoadingButton /> */}
-            <Text
-              style={styles.button}
-              onPress={() => this.handleSubmit()}
-            >
-              Sign Up
-            </Text>
+            {
+              this.props.auth.isLoading
+                ? <LoadingButton />
+                : (
+                  <Text
+                    style={styles.button}
+                    onPress={() => this.handleSubmit()}
+                  >
+                    Sign Up
+                  </Text>
+                )
+            }
           </View>
           <View style={[styles.footer, styles.absolute]}>
             <Text style={styles.footerText}>Already have an account?</Text>
@@ -93,4 +127,12 @@ class Register extends Component {
   }
 }
 
-export default Register;
+const mapStateToProps = (state) => ({
+  auth: state.auth
+})
+
+const mapDispatchToProps = {
+  register
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Register);
