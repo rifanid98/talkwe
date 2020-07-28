@@ -2,7 +2,9 @@ import React, { Component } from 'react'
 import { Text, View, TextInput, Button, Alert, Image } from "react-native";
 import { globalStyles as styles } from 'assets';
 import { Logo, FlashMessage, LoadingButton } from 'components';
-import { loginSchema } from 'utils';
+import { loginSchema, createFormData } from 'utils';
+import { connect } from 'react-redux';
+import { login } from 'modules';
 
 class Login extends Component {
   constructor(props) {
@@ -29,6 +31,28 @@ class Login extends Component {
       this.setState({
         ...this.state,
         error: ''
+      }, () => {
+          const formData = createFormData(data)
+          this.props.login(formData)
+            .then(res => {
+              if ('status' in res.value && parseInt(res.value.status) === 200) {
+                
+              } else {
+                Alert.alert('Login Failed', 'Please try again...')
+              }
+            })
+            .catch(error => {
+              console.log(error)
+              let errorMessage = 'Please try again';
+              if (error.response !== undefined) {
+                if (error.response.data) {
+                  if (error.response.data.message) {
+                    errorMessage = error.response.data.message;
+                  }
+                }
+              }
+              Alert.alert('Login Failed', errorMessage)
+            });
       })
     } catch (error) {
       if (error) {
@@ -39,7 +63,6 @@ class Login extends Component {
       }
     }
   }
-
   render() {
     return (
       <>
@@ -58,13 +81,18 @@ class Login extends Component {
               placeholder="Password"
               secureTextEntry={true}
             />
-            {/* <LoadingButton /> */}
-            <Text
-              style={styles.button}
-              onPress={() => this.handleSubmit()}
-            >
-            Login
-            </Text>
+            {
+              this.props.auth.isLoading 
+                ? <LoadingButton />
+                : (
+                  <Text
+                    style={styles.button}
+                    onPress={() => this.handleSubmit()}
+                  >
+                    Login
+                  </Text>
+                )
+            }
             <Text style={styles.p}>Forgot Password ?</Text>
           </View>
           <View style={[styles.footer, styles.absolute]}>
@@ -80,4 +108,12 @@ class Login extends Component {
   }
 }
 
-export default Login;
+const mapStateToProps = (state) => ({
+  auth: state.auth
+})
+
+const mapDispatchToProps = {
+  login
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);
