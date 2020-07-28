@@ -4,6 +4,7 @@ import Realtime from './Realtime';
 import Splash from './Splash';
 import Chat from './Chat';
 import Profile from './Profile';
+import FriendProfile from './FriendProfile';
 
 export {
   Home,
@@ -11,7 +12,8 @@ export {
   Realtime,
   Splash,
   Chat,
-  Profile
+  Profile,
+  FriendProfile
 };
 
 export * from './Auth'
