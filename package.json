@@ -15,30 +15,34 @@
     "@fortawesome/free-brands-svg-icons": "^5.14.0",
     "@fortawesome/free-regular-svg-icons": "^5.14.0",
     "@fortawesome/free-solid-svg-icons": "^5.14.0",
+    "@fortawesome/react-fontawesome": "^0.1.11",
     "@fortawesome/react-native-fontawesome": "^0.2.5",
+    "@hapi/joi": "^17.1.1",
     "@hookform/resolvers": "0.0.6",
     "@react-native-community/async-storage": "^1.11.0",
-    "babel-plugin-dotenv-import": "^2.1.0",
-    "jwt-decode": "^2.2.0",
-    "moment": "^2.27.0",
-    "react-hook-form": "^6.0.6",
-    "react-native-textarea": "^1.0.4",
-    "react-redux": "^7.2.0",
-    "redux": "^4.0.5",
-    "redux-logger": "^3.0.6",
-    "redux-persist": "^6.0.0",
-    "redux-promise-middleware": "^6.1.2",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-navigation/native": "^5.7.1",
     "@react-navigation/stack": "^5.7.1",
     "axios": "^0.19.2",
+    "babel-plugin-dotenv-import": "^2.1.0",
+    "jwt-decode": "^2.2.0",
+    "moment": "^2.27.0",
     "react": "16.13.1",
+    "react-hook-form": "^6.0.6",
     "react-native": "0.63.2",
     "react-native-gesture-handler": "^1.7.0",
     "react-native-maps": "0.27.1",
     "react-native-reanimated": "^1.10.1",
     "react-native-safe-area-context": "^3.1.1",
     "react-native-screens": "^2.9.0",
+    "react-native-svg": "^12.1.0",
+    "react-native-textarea": "^1.0.4",
+    "react-redux": "^7.2.0",
+    "redux": "^4.0.5",
+    "redux-logger": "^3.0.6",
+    "redux-persist": "^6.0.0",
+    "redux-promise-middleware": "^6.1.2",
+    "rn-sliding-up-panel": "^2.4.3",
     "socket.io-client": "^2.3.0"
   },
   "devDependencies": {
@@ -63,18 +67,5 @@
   },
   "jest": {
     "preset": "react-native"
-  },
-  "lint-staged": {
-    "src/**/*.{js,jsx}": [
-      "eslint --ext .jsx --ext .js src/ --fix"
-    ],
-    "./src/**": [
-      "prettier --write ."
-    ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   }
 }
