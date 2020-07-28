@@ -1,18 +1,58 @@
+/**
+ * React Navigation
+ */
 import 'react-native-gesture-handler';
-import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Home, Maps, Realtime } from 'screens';
 
-const Stack = createStackNavigator();
+/**
+ * React
+ */
+import React, { Component } from 'react'
 
-const RootRoute = (props) => {
-  return (
-    <Stack.Navigator initialRouteName="realtime">
-      <Stack.Screen name="home" component={Home} />
-      <Stack.Screen name="maps" component={Maps} />
-      <Stack.Screen name="realtime" component={Realtime} />
-    </Stack.Navigator>
-  );
-};
+/**
+ * Routes
+ */
+import MainRoute from './MainRoute';
+import AuthRoute from './AuthRoute';
 
-export default RootRoute;
+/**
+ * Redux
+ */
+import { connect } from 'react-redux';
+
+const Stack = createStackNavigator()
+class RootRoute extends Component {
+  constructor(props) {
+    super(props)
+  }
+
+  render() {
+    return (
+      <>
+        <Stack.Navigator
+          initialRouteName='main'
+          screenOptions={{
+            headerShown: false
+          }}
+        >
+          {/* {
+            this.props.auth.data.tokenLogin
+              ? <Stack.Screen name="main" component={MainRoute} />
+              : <Stack.Screen name="auth" component={AuthRoute} />
+          } */}
+          <Stack.Screen name="main" component={MainRoute} />
+        </Stack.Navigator>
+      </>
+    )
+  }
+}
+const mapStateToProps = state => ({
+  apps: state.apps,
+  auth: state.auth
+})
+
+const mapDispatchToProps = {
+  
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(RootRoute);
