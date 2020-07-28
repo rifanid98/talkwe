@@ -1,11 +1,21 @@
-import mainStyles from './mainStyles'
 import { font } from './font'
-import colorScheme from './colorScheme'
 import { reset } from './reset'
+import colorScheme from './colorScheme'
+import mainStyles from './mainStyles'
+import globalStyles from './globalStyles'
+import homeStyles from './homeStyles'
+import chatStyles from './chatStyles'
+import profileStyles from './profileStyles'
+import mapsStyles from './mapsStyles'
 
 export {
-  mainStyles,
   font,
   colorScheme,
-  reset
+  reset,
+  mainStyles,
+  globalStyles,
+  homeStyles,
+  chatStyles,
+  profileStyles,
+  mapsStyles
 }

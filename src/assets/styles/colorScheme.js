@@ -2,11 +2,16 @@ import { ACTIVE_THEME } from '@env';
 const colors = {
   primary: {
     primary: '#FFFFFF',
-    secondary: '#e6e6e6',
-    accent: '#413f57',
+    secondary: {
+      orange: '#ffe5b4',
+      blue: '#cbdfe5',
+      red: '#fff5f5',
+      strongRed: '#ff3d39'
+    },
+    accent: '#ffa806',
     font: {
       primary: '#4d4d4d',
-      secondary: '#808080'
+      secondary: '#ae6537'
     }
   },
   secondary: {
