@@ -30,17 +30,16 @@ class RootRoute extends Component {
     return (
       <>
         <Stack.Navigator
-          initialRouteName='main'
+          // initialRouteName='auth'
           screenOptions={{
             headerShown: false
           }}
         >
-          {/* {
+          {
             this.props.auth.data.tokenLogin
               ? <Stack.Screen name="main" component={MainRoute} />
               : <Stack.Screen name="auth" component={AuthRoute} />
-          } */}
-          <Stack.Screen name="main" component={MainRoute} />
+          }
         </Stack.Navigator>
       </>
     )
