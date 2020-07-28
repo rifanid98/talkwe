@@ -15,19 +15,6 @@ export const getUsers = (token, params = '') => {
     }),
   };
 };
-export const getDetailUser = (token, id) => {
-  const getId = id ? `/${id}` : '';
-  return {
-    type: actionType.GET_USERS,
-    payload: Axios({
-      method: 'GET',
-      url: `${apiUri.users}${getId}`,
-      headers: {
-        authorization: token,
-      },
-    }),
-  };
-};
 export const addUser = (token, data) => {
   return {
     type: actionType.ADD_USER,
@@ -63,6 +50,19 @@ export const deleteUser = (token, id) => {
     type: actionType.DELETE_USER,
     payload: Axios({
       method: 'DELETE',
+      url: `${apiUri.users}${getId}`,
+      headers: {
+        authorization: token,
+      },
+    }),
+  };
+};
+export const getDetailUser = (token, id) => {
+  const getId = id ? `/${id}` : '';
+  return {
+    type: actionType.GET_USERS,
+    payload: Axios({
+      method: 'GET',
       url: `${apiUri.users}${getId}`,
       headers: {
         authorization: token,
