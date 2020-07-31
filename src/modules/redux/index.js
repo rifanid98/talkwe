@@ -16,6 +16,8 @@ import users from './users/reducer';
 import apps from './apps/reducer';
 import friends from './friends/reducer';
 import messages from './messages/reducer';
+import location from './location/reducer';
+
 
 // Combine The Reducers
 const reducer = combineReducers({
@@ -23,7 +25,8 @@ const reducer = combineReducers({
   users,
   apps,
   friends,
-  messages
+  messages,
+  location
 });
 
 /**
@@ -34,10 +37,11 @@ const persistConfig = {
   storage: AsyncStorage,
   whitelist: [
     'auth',
-    'users',
     'apps',
     'friends',
     'messages',
+    'users',
+    'location'
   ],
 };
 
@@ -60,6 +64,7 @@ export * from './users/actions';
 export * from './apps/actions';
 export * from './friends/actions';
 export * from './messages/actions';
+export * from './location/actions';
 
 /**
  * selector
