@@ -4,9 +4,10 @@ import { globalStyles as global, profileStyles as profile } from 'assets';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faArrowLeft, faMapMarkerAlt, faUserCircle, faSignOutAlt, faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import { connect } from 'react-redux';
-import { logout, patchUser } from 'modules';
-import { LoadingButton, FlashMessage } from 'components';
-import { profileSchema, createFormData } from 'utils';
+import { logout, patchUser, getAddress } from 'modules';
+import { LoadingButton, FlashMessage, LoadingIcon } from 'components';
+import { profileSchema, createFormData, createImageFormData } from 'utils';
+import ImagePicker from 'react-native-image-picker'
 
 class Profile extends Component {
   constructor(props) {
@@ -19,22 +20,21 @@ class Profile extends Component {
         full_name: this.props.auth.data.full_name,
         email: this.props.auth.data.email,
         password: ''
-      }
+      },
+      image: null
     }
   }
-  handleOnChange = (text, state) => {
-    Object.keys(state).map(data => {
-      this.setState({
-        ...this.state,
-        [data]: {
-          ...this.state[data],
-          [state[data]]: text
-        }
-      }, () => {
-          console.log(this.state.form)
-      })
-    })
+
+  /**
+   * Life Cycles
+   */
+  componentDidMount() {
+    this.getAddress()
   }
+
+  /**
+   * API Serives
+   */
   updateUser = async () => {
     const data = {
       ...this.state.form
@@ -49,30 +49,30 @@ class Profile extends Component {
         ...this.state,
         error: ''
       }, () => {
-          const token = this.props.auth.data.tokenLogin;
-          const userID = this.props.auth.data.id;
-          const formData = createFormData(data)
-            this.props.patchUser(token, formData, userID)
-            .then(res => {
-              Alert.alert(
-                'Update Profile Success',
-                'Please relogin to continue',
-                [{ text: "Cancel", onPress: () => this.logout(), style: "cancel" },
-                { text: "OK", onPress: () => this.logout() }], { cancelable: false }
-              );
-            })
-            .catch(error => {
-              console.log(error)
-              let errorMessage = 'Please try again';
-              if (error.response !== undefined) {
-                if (error.response.data) {
-                  if (error.response.data.message) {
-                    errorMessage = error.response.data.message;
-                  }
+        const token = this.props.auth.data.tokenLogin;
+        const userID = this.props.auth.data.id;
+        const formData = createFormData(data)
+        this.props.patchUser(token, formData, userID)
+          .then(res => {
+            Alert.alert(
+              'Update Profile Success',
+              'Please relogin to continue',
+              [{ text: "Cancel", onPress: () => this.logout(), style: "cancel" },
+              { text: "OK", onPress: () => this.logout() }], { cancelable: false }
+            );
+          })
+          .catch(error => {
+            console.log(error)
+            let errorMessage = 'Please try again';
+            if (error.response !== undefined) {
+              if (error.response.data) {
+                if (error.response.data.message) {
+                  errorMessage = error.response.data.message;
                 }
               }
-              Alert.alert('Update Profile Failed', errorMessage)
-            });
+            }
+            Alert.alert('Update Profile Failed', errorMessage)
+          });
       })
     } catch (error) {
       if (error) {
@@ -82,6 +82,70 @@ class Profile extends Component {
         })
       }
     }
+  }
+  updateUserImage = async () => {
+    const token = this.props.auth.data.tokenLogin;
+    const userID = this.props.auth.data.id;
+    const image = this.state.image;
+    const formData = createImageFormData(null, image, 'image')
+    this.props.patchUser(token, formData, userID)
+      .then(res => {
+
+      })
+      .catch(error => {
+        console.log(error)
+        let errorMessage = 'Please try again';
+        if (error.response !== undefined) {
+          if (error.response.data) {
+            if (error.response.data.message) {
+              errorMessage = error.response.data.message;
+            }
+          }
+        }
+        Alert.alert('Update Image Failed', errorMessage)
+      });
+  }
+  getAddress = () => {
+    const latlang = this.props.auth.data.location;
+    this.props.getAddress(latlang)
+      .then(res => {
+        
+      })
+      .catch(error => {
+        console.log(error)
+      })
+  }
+  
+   /**
+    * Logics
+    */
+  handleOnChange = (text, state) => {
+    Object.keys(state).map(data => {
+      this.setState({
+        ...this.state,
+        [data]: {
+          ...this.state[data],
+          [state[data]]: text
+        }
+      }, () => {
+          console.log(this.state.form)
+      })
+    })
+  }
+  handleChoosePhoto = () => {
+    const options = {
+      noData: true,
+    }
+    ImagePicker.showImagePicker(options, response => {
+      if (response.uri) {
+        this.setState({
+          ...this.state,
+          image: response
+        }, () => {
+            this.updateUserImage()
+        })
+      }
+    })
   }
   logout = () => {
     this.props.logout()
@@ -96,11 +160,31 @@ class Profile extends Component {
             <Text style={profile.menuButton} onPress={() => this.props.navigation.goBack()}> <FontAwesomeIcon icon={faArrowLeft} size={20} /> </Text>
           </View>
           {/* profile */}
-          <View style={profile.profile}>
-            <Image
-              style={profile.image}
-              source={{ uri: this.props.auth.data.image }}
-            />
+          <View
+            style={profile.profile}
+          >
+            {
+              this.props.users.isLoading
+                ? <View style={[profile.image, {
+                  backgroundColor: 'gray',
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }]}>
+                  <LoadingIcon style={{height: 50, width: 50}}/>
+                </View>
+                : this.state.image
+                  ? <TouchableOpacity
+                      onPress={() => this.handleChoosePhoto()}
+                    >
+                      <Image source={{ uri: this.state.image.uri }} style={profile.image} resizeMethod="resize" />
+                    </TouchableOpacity>
+                  : <TouchableOpacity
+                      onPress={() => this.handleChoosePhoto()}
+                    >
+                      <Image style={profile.image} source={{ uri: this.props.auth.data.image }} resizeMethod="resize" />
+                    </TouchableOpacity>
+            }
             <Text style={profile.name}>{this.props.auth.data.full_name}</Text>
             <Text style={profile.email}>
               <FontAwesomeIcon icon={faEnvelope} />
@@ -108,7 +192,15 @@ class Profile extends Component {
             </Text>
             <Text style={profile.location}>
               <FontAwesomeIcon icon={faMapMarkerAlt} />
-              {this.props.auth.data.location}
+              {
+                this.props.location.isLoading
+                  ? <Text>Loading...</Text> 
+                  : this.props.location.data
+                    ? this.props.location.data.display_name
+                    : <Text
+                      onPress={() => this.getAddress()}
+                    >Cannot get location. Touch to refresh.</Text>
+              }
             </Text>
           </View>
           {/* setting */}
@@ -189,12 +281,15 @@ class Profile extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  auth: state.auth
+  auth: state.auth,
+  users: state.users,
+  location: state.location
 })
 
 const mapDispatchToProps = {
   logout,
-  patchUser
+  patchUser,
+  getAddress
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);
