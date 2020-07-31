@@ -1,26 +1,63 @@
 import React, { Component } from 'react'
-import { Text, View, Image, TouchableOpacity } from 'react-native';
-import { globalStyles as global, homeStyles as home } from 'assets';
+import { Text, View, Image, TouchableOpacity, TouchableOpacityBase, Alert } from 'react-native';
+import { globalStyles as global, homeStyles as home, colorScheme as color} from 'assets';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faMapMarkedAlt, faUser } from '@fortawesome/free-solid-svg-icons'
+import { faMapMarkedAlt, faUser, faCommentDots } from '@fortawesome/free-solid-svg-icons'
 import { ScrollView } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
-import {  getFriendsList, getMessagesList } from 'modules';
+import { getFriendsList, getMessagesList, getMessageStatus, patchUser, setLocation } from 'modules';
+import io from 'socket.io-client';
+import { appConfig } from 'configs';
+import { convertDate, getPassedTime, createFormData } from 'utils';
+import Geolocation from 'react-native-geolocation-service';
 
 class Home extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      location: {
+        latitude: 0,
+        longitude: 0,
+      },
       friendsList: [],
       messagesList: [],
+      unreadMessages: [],
     }
   }
 
+  /**
+   * Life Cycles
+   */
   componentDidMount() {
-    this.getFriendsList()
     this.getMessagesList()
+    this.getFriendsList()
+    this.getMessageStatus()
+    this.socket = io(appConfig.url.origin);
+    // this.socket.on('deleteUnreadMessages', (data) => {
+    //   console.log(data)
+    //   this.deleteUnreadMessages(senderID)
+    // });
+    this.socket.on('privateMessage', (data) => {
+      if (data.sender_id === this.props.auth.data.id) {
+        this.getMessagesList()
+      }
+    });
+    this.socket.on('broadcastMessage', (data) => {
+      this.setUnreadMessages(data)
+    });
+    setTimeout(() => {
+      this.setLocation()
+    }, 1000);
+    setTimeout(() => {
+    }, 2000);
   }
-
+  componentWillUnmount() {
+    this.socket.disconnect()
+    this.socket.removeAllListeners()
+  }
+  componentDidUpdate() {
+    console.log(this.props.messages, 'messages');
+  }
   /**
    * API Services
    */
@@ -37,7 +74,7 @@ class Home extends Component {
         }).catch((error) => {
           console.log(error, `get friends lists failed`)
         })
-      : alert('Token Failed', 'Cannot find token...')
+      : console.log(`cannot find token`)
   }
   getMessagesList = () => {
     const token = this.props.auth.data.tokenLogin;
@@ -45,18 +82,131 @@ class Home extends Component {
     token
       ? this.props.getMessagesList(token, id)
         .then((res) => {
-          console.log(this.props.messages, 'props messages')
           this.setState({
             ...this.state,
             messagesList: this.props.messages.data
-          }, () => {
-            console.log(this.state.messagesList);
           })
         }).catch((error) => {
           console.log(`get messages lists failed`)
         })
-      : alert('Token Failed', 'Cannot find token...')
+      : console.log(`cannot find token`)
   }
+  getMessageStatus = () => {
+    const token = this.props.auth.data.tokenLogin;
+    const receiverID = this.props.auth.data.id;
+    token
+    ? this.props.getMessageStatus(token, receiverID)
+        .then((res) => {
+          this.setState({
+            ...this.state,
+            unreadMessages: res.value.data.data
+          })
+        }).catch((error) => {
+          console.log(`get message status failed`)
+        })
+      : console.log(`cannot find token`)
+  }
+  updateUser = (data) => {
+    const token = this.props.auth.data.tokenLogin;
+    const user_id = this.props.auth.data.id;
+    const formData = createFormData(data)
+    this.props.patchUser(token, formData, user_id)
+      .then((res) => {
+        console.log('Location updated');
+      })
+      .catch((error) => {
+        console.log(error);
+        error.response.data.message
+          ? Alert.alert('Failed', error.response.data.message)
+          : Alert.alert('Failed', 'Update Location Failed.')
+      })
+  }
+  /**
+   * Logic
+   */
+  goToChat = (data) => {
+    this.deleteUnreadMessages(data.id)
+    this.props.navigation.navigate('chat', { sender: data })
+  }
+  getUnreadMessages = (senderID) => {
+    const unreadMessages = this.state.unreadMessages;
+    let count = 0;
+    unreadMessages.map(unreadMessage => {
+      if (unreadMessage.sender_id === senderID) count += unreadMessage.total
+    })
+    return count;
+  }
+  deleteUnreadMessages = (senderID) => {
+    let unreadMessages = this.state.unreadMessages;
+    console.log(unreadMessages, 'unreadMessage');
+    unreadMessages.map((unreadMessage, index) => {
+      console.log(unreadMessages[index].sender_id, 'sender id');
+      if (unreadMessages[index].sender_id === senderID) {
+        if (unreadMessages.length < 2) {
+          unreadMessages = [];
+        } else {
+          delete unreadMessages[index];
+        }
+      }
+      this.setState({
+        ...this.state,
+        'unreadMessages': unreadMessages
+      })
+    })
+  }
+  setUnreadMessages = async (data) => {
+    const unreadMessages = this.state.unreadMessages;
+    if (data.receiver_id === this.props.auth.data.id) {
+      let count = 0;
+      let newIndex = 0;
+      await unreadMessages.map((unreadMessage, index) => {
+        if (unreadMessage.sender_id === data.sender_id) {
+          count++;
+          newIndex = index;
+        }
+      })
+      if (count !== 0 && count !== undefined && count !== null) {
+        unreadMessages[newIndex].total += 1;
+      } else {
+        unreadMessages.push({
+          sender_id: data.sender_id,
+          receiver_id: data.receiver_id,
+          total: 1
+        })
+      }
+      this.setState({
+        ...this.state, 
+        'unreadMessages': unreadMessages
+      })
+      this.getMessagesList()
+      // this.getNewMessagesList()
+    }
+  }
+  setLocation = () => {
+    Geolocation.getCurrentPosition(
+      (position) => {
+        this.setState({
+          ...this.state,
+          location: {
+            ...this.state.location,
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          }
+        }, () => {
+            this.props.setLocation(this.state.location)
+            this.updateUser({ location: `${this.state.location.latitude},${this.state.location.longitude}`})
+        })
+      },
+      (error) => {
+        // See error code charts below.
+        console.log(error.code, error.message);
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
+  };
+  /**
+   * DOM Render
+   */
   render() {
     return (
       <>
@@ -99,7 +249,13 @@ class Home extends Component {
           </View>
           {/* messages */}
           <View style={home.messagesList}>
-            <Text style={home.label}>Messages List</Text>
+            <View style={home.labelWrapper}>
+              <Text style={home.label}>Messages List</Text>
+              {
+                this.state.unreadMessages.length > 0
+                && <Text style={[home.messagesListItemInfoCircle, home.labelBadge]}>{this.state.unreadMessages.length}</Text> 
+              }
+            </View>
             <ScrollView
               style={home.messagesListItems}
             >
@@ -110,26 +266,24 @@ class Home extends Component {
                     <TouchableOpacity
                       key={index}
                       style={home.messagesListItem}
-                      onPress={() => this.props.navigation.navigate('chat', {
-                        sender: {
-                          id: message.sender_id,
+                      onPress={() => this.goToChat({
+                          id: message.sender_id === this.props.auth.data.id ? message.receiver_id : message.sender_id,
                           full_name: message.full_name,
                           image: message.image,
                           online: message.online
-                        }
-                      })}
+                        })}
                     >
                       <Image
                         style={home.messagesListItemImage}
                         source={{ uri: message.image }}
                       />
                       <View style={home.messagesListItemContent}>
-                        <Text style={home.messagesListItemContentTitle}>{message.username}</Text>
+                        <Text style={home.messagesListItemContentTitle}>{message.full_name.split(' ')[0]}</Text>
                         <Text style={home.messagesListItemContentText}>{message.message}</Text>
                       </View>
                       <View style={home.messagesListItemInfo}>
-                        <Text style={home.messagesListItemInfoTitle}>12min</Text>
-                        <Text style={home.messagesListItemInfoCircle}>2</Text>
+                        <Text style={home.messagesListItemInfoTitle}>{convertDate(message.created_at, 'timeOnly24')}</Text>
+                        {this.getUnreadMessages(message.sender_id) > 0 && <Text style={home.messagesListItemInfoCircle}>{this.getUnreadMessages(message.sender_id)}</Text>}
                       </View>
                     </TouchableOpacity>
                   )
@@ -137,6 +291,16 @@ class Home extends Component {
               }
             </ScrollView>
           </View>
+          <Text 
+            style={home.addMessageButton}
+            onPress={() => this.props.navigation.navigate('addChat')}
+          >
+            <FontAwesomeIcon
+              color={color.accent}
+              icon={faCommentDots}
+              size={50}
+            />
+          </Text>
         </View>  
       </>
     )
@@ -147,11 +311,15 @@ const mapStateToProps = (state) => ({
   auth: state.auth,
   friends: state.friends,
   messages: state.messages,
+  location: state.location
 })
 
 const mapDispatchToProps = {
   getFriendsList,
   getMessagesList,
+  getMessageStatus,
+  setLocation,
+  patchUser
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
