@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 const { Alert } = require("react-native");
 
 export const alert = (title, message) => {
@@ -52,3 +54,10 @@ export const createFormData = (body) => {
 
   return data;
 };
+
+export const getPassedTime = (time) => {
+  var now = moment(moment().format('HH:mm:ss'), 'HH:mm:ss');
+  var then = moment(time, 'HH:mm:ss');
+  var duration = moment.duration(now.diff(then)).humanize()
+  return duration;
+}
