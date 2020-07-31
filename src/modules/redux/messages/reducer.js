@@ -5,6 +5,7 @@ const initialState = {
   isLoading: false,
   isError: false,
   errorMsg: '',
+  isSending: false,
   data: [],
 };
 
@@ -37,21 +38,22 @@ const messages = (state = initialState, action) => {
         ...state,
         isLoading: true,
         isError: false,
+        isSending: true,
       };
     case actionType.ADD_MESSAGE_REJECTED:
       return {
         ...state,
         isLoading: false,
         isError: true,
+        isSending: false,
         errorMsg: 'Data Rejected',
       };
     case actionType.ADD_MESSAGE_FULFILLED:
-      console.log(action.payload, 'ini data payload');
-      console.log(state);
       return {
         ...state,
         isLoading: false,
         isError: false,
+        isSending: false,
         errorMsg: '',
       };
 
@@ -119,7 +121,6 @@ const messages = (state = initialState, action) => {
         data: action.payload.data.data,
       };
 
-
     case actionType.GET_CONVERSATIONS_MESSAGES_PENDING:
       return {
         ...state,
@@ -140,6 +141,48 @@ const messages = (state = initialState, action) => {
         isError: false,
         errorMsg: '',
         data: action.payload.data.data,
+      };
+
+    case actionType.SET_MESSAGE_STATUS_PENDING:
+      return {
+        ...state,
+        isLoading: true,
+        isError: false,
+      };
+    case actionType.SET_MESSAGE_STATUS_REJECTED:
+      return {
+        ...state,
+        isLoading: false,
+        isError: true,
+        errorMsg: 'Data Rejected',
+      };
+    case actionType.SET_MESSAGE_STATUS_FULFILLED:
+      return {
+        ...state,
+        isLoading: false,
+        isError: false,
+        errorMsg: '',
+      };
+
+    case actionType.GET_MESSAGE_STATUS_PENDING:
+      return {
+        ...state,
+        isLoading: true,
+        isError: false,
+      };
+    case actionType.GET_MESSAGE_STATUS_REJECTED:
+      return {
+        ...state,
+        isLoading: false,
+        isError: true,
+        errorMsg: 'Data Rejected',
+      };
+    case actionType.GET_MESSAGE_STATUS_FULFILLED:
+      return {
+        ...state,
+        isLoading: false,
+        isError: false,
+        errorMsg: '',
       };
 
     default:
