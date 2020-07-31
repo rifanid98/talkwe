@@ -82,7 +82,7 @@ class Login extends Component {
               secureTextEntry={true}
             />
             {
-              this.props.auth.isLoading 
+              this.props.auth.isLoading
                 ? <LoadingButton />
                 : (
                   <Text
