@@ -41,12 +41,36 @@ export const handleAsync = async promise => {
   }
 };
 
-export const convertDate = date => {
+export const convertDate = (date, type = null) => {
   // if (!date) return null;
-  if (!date) {
-    return moment().format("DD ddd MMM YYYY")
+  if (type) {
+    switch (type) {
+      case 'timeOnly12':
+        return moment(date).format("hh::mm");
+      case 'timeOnlyFull12':
+        return moment(date).format("hh::mm:ss");
+      case 'timeOnly24':
+        return moment(date).format("HH:mm");
+      case 'timeOnlyFull24':
+        return moment(date).format("HH:mm:ss");
+      case 'timeDate12':
+        return moment(date).format("DD/MM/YY hh::mm");
+      case 'timeDateFull12':
+        return moment(date).format("DD/MM/YY hh::mm:ss");
+      case 'timeDate24':
+        return moment(date).format("DD/MM/YY HH:mm");
+      case 'timeDateFull24':
+        return moment(date).format("DD/MM/YY HH:mm:ss");
+    
+      default:
+        break;
+    }
   } else {
-    return moment(date).format("DD MMMM YYYY");
+    if (!date) {
+      return moment().format("DD ddd MMM YYYY")
+    } else {
+      return moment(date).format("DD MMMM YYYY");
+    }
   }
 };
 
