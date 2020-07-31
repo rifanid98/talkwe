@@ -1,31 +1,46 @@
 import React, { Component } from 'react'
-import { Text, View, Image, TouchableOpacity, TextInput } from 'react-native';
+import { Text, View, Image, TouchableOpacity, TextInput, FlatList, Alert } from 'react-native';
 import { globalStyles as global, chatStyles as chat } from 'assets';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faEllipsisH, faArrowLeft, faCheckDouble, faPaperPlane } from '@fortawesome/free-solid-svg-icons'
-import { ScrollView  } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
-import { getConversationsMessage, addMessage } from 'modules';
-import { createFormData } from 'utils';
-import { LoadingIcon } from 'components';
+import { getConversationsMessage, addMessage, setMessageStatus } from 'modules';
+import { createFormData, convertDate } from 'utils';
+import io from 'socket.io-client';
+import { appConfig } from 'configs';
 
 class Chat extends Component {
   constructor(props) {
     super(props)
     this.state = {
       messages: [],
-      message: ''
+      message: '',
+      unreadMessages: [],
     }
   }
+
+  /**
+   * Life Cycles
+   */
   componentDidMount() {
     this.getMessage()
+    this.setMessageStatus()
+    this.socket = io(appConfig.url.origin);
+    this.socket.on('privateMessage', (data) => {
+      this.setNewMessage(data)
+    });
   }
-  handleOnChange = (text, state) => {
-    this.setState({
-      ...this.state,
-      [state]: text
-    })
+  componentWillUnmount() {
+    this.socket.disconnect()
+    this.socket.removeAllListeners()
   }
+  componentDidUpdate() {
+    
+  }
+
+  /**
+   * API Services
+   */
   getMessage = () => {
     const token = this.props.auth.data.tokenLogin;
     const senderID = this.props.route.params.sender.id
@@ -35,14 +50,12 @@ class Chat extends Component {
         .then((res) => {
           this.setState({
             ...this.state,
-            messages: this.props.messages.data
-          }, () => {
-              console.log(this.state.messages);
+            messages: this.props.messages.data.reverse()
           })
         }).catch((error) => {
           console.log(`get messages lists failed`)
         })
-      : alert('Token Failed', 'Cannot find token...')
+      : console.log(`cannot find token`)
   }
   getNewMessage = () => {
     const token = this.props.auth.data.tokenLogin;
@@ -54,13 +67,11 @@ class Chat extends Component {
           this.setState({
             ...this.state,
             messages: this.props.messages.data
-          }, () => {
-            console.log(this.state.messages);
           })
         }).catch((error) => {
           console.log(`get messages lists failed`)
         })
-      : alert('Token Failed', 'Cannot find token...')
+      : console.log(`cannot find token`)
   }
   sendMessage = () => {
     const token = this.props.auth.data.tokenLogin;
@@ -72,24 +83,109 @@ class Chat extends Component {
       receiver_id: receiverID,
       message: message
     }
+    this.handleOnChange('', 'message')
     const formData = createFormData(data);
     token
       ? this.props.addMessage(token, formData)
         .then((res) => {
-          this.handleOnChange('', 'message')
-          this.getMessage()
+          // this.getMessage()
         }).catch((error) => {
-          console.log(`send message failed`)
+          this.handleOnChange(message, 'message')
+          Alert.alert('Send message failed', 'Please try again later.')
         })
-      : alert('Token Failed', 'Cannot find token...')
+      : console.log(`cannot find token`)
   }
+  setMessageStatus = () => {
+    const token = this.props.auth.data.tokenLogin;
+    const senderID = this.props.route.params.sender.id; 
+    const receiverID = this.props.auth.data.id;
+    token
+      ? this.props.setMessageStatus(token, senderID, receiverID)
+        .then((res) => {
+          // console.log(res)
+        }).catch((error) => {
+          console.log(`set message status failed`)
+        })
+      : console.log(`cannot find token`)
+  }
+
+  /**
+   * Logic
+   */
+  handleOnChange = (text, state) => {
+    this.setState({
+      ...this.state,
+      [state]: text
+    })
+  }
+  setNewMessage = (data) => {
+    let messages = this.state.messages;
+    messages.reverse()
+    messages.push(data.message)
+    this.setState({
+      ...this.state,
+      'messages': messages.reverse()
+    }, () => {
+        this.setMessageStatus()
+    })
+  }
+
+  /**
+   * Emitter to deleteUnreadMessages HomeScreen
+   */
+// this.socket.emit('deleteUnreadMessages', {
+//   sender_id: 1,
+//   receiver_id: 2
+// });
+
+  /**
+   * DOM Render
+   */
   render() {
+    const renderItem = (item) => {
+      const message = item.item
+      return (
+        message.sender_id !== this.props.auth.data.id
+        ? (
+          <View
+            key={message.id}
+            style={chat.sender}>
+            <Image
+              style={chat.senderImage}
+              source={{ uri: this.props.route.params.sender.image }}
+            />
+            <View style={chat.senderMessage}>
+              <Text style={chat.senderText}>{message.message}</Text>
+                <Text style={chat.timestamp}>{convertDate(message.created_at, 'timeDate24')}</Text>
+            </View>
+          </View>
+        )
+        : (
+          <View
+            key={message.id}
+            style={chat.receiver}
+          >
+            <Text style={chat.receiverMessage}>{message.message}</Text>
+            <View style={{
+              flexDirection: 'row',
+              justifyContent: 'flex-end'
+            }}>
+                <Text style={chat.timestamp}>{convertDate(message.created_at, 'timeDate24')}</Text>
+              <Text style={chat.checked}><FontAwesomeIcon icon={faCheckDouble} size={13} color={message.message_read === 0 ? `grey` : `lightblue`} /></Text>
+            </View>
+          </View>
+        )
+      )
+    };
     return (
       <>
         <View style={[chat.container, global.relative]}>
           {/* header */}
           <View style={chat.header}>
-            <Text style={chat.menuButton}> <FontAwesomeIcon icon={faArrowLeft} size={20} /> </Text>
+            <Text
+              style={chat.menuButton}
+              onPress={() => this.props.navigation.goBack()}
+            > <FontAwesomeIcon icon={faArrowLeft} size={20} /> </Text>
             <TouchableOpacity
               style={chat.friend}
               onPress={() => this.props.navigation.navigate('friendProfile', {senderID: this.props.route.params.sender.id})}
@@ -106,54 +202,20 @@ class Chat extends Component {
             {/* <Text style={chat.menuButton}> <FontAwesomeIcon icon={faEllipsisH} size={20} /> </Text> */}
           </View>
           {/* content */}
-          <ScrollView
-            style={chat.content}
-            contentContainerStyle={{
-              paddingBottom: 85
-            }}
-          >
-            {
-              this.state.messages.map(message => {
-                if (message.sender_id !== this.props.auth.data.id) {
-                  return (
-                    <View
-                      key={message.id}
-                      style={chat.sender}>
-                      <Image
-                        style={chat.senderImage}
-                        source={{ uri: this.props.route.params.sender.image }}
-                      />
-                      <View style={chat.senderMessage}>
-                        <Text style={chat.senderText}>{message.message}</Text>
-                        <Text style={chat.timestamp}>20.35</Text>
-                      </View>
-                    </View>
-                  )
-                } else {
-                  return (
-                    <View
-                      key={message.id}
-                      style={chat.receiver}
-                    >
-                      <Text style={chat.receiverMessage}>{message.message}</Text>
-                      <View style={{
-                        flexDirection: 'row',
-                        justifyContent: 'flex-end'
-                      }}>
-                        <Text style={chat.timestamp}>20.35</Text>
-                        <Text style={chat.checked}><FontAwesomeIcon icon={faCheckDouble} size={13} /></Text>
-                      </View>
-                    </View>
-                  )
-                }
-              })
-            }
-          </ScrollView>
+          <FlatList
+            style={{width: '100%'}}
+            showsVerticalScrollIndicator={false}
+            inverted
+            data={this.state.messages}
+            extraData={this.state.messages}
+            renderItem={renderItem}
+            keyExtractor={item => item.id}
+          />
           {/* footer */}
           <View style={chat.footer}>
             <TextInput
               style={chat.input}
-              placeholder="Type a message..."
+              placeholder={this.props.messages.isSending ? 'Sending...' : 'Type a message...'}
               multiline={true}
               onChangeText={(text) => this.handleOnChange(text, 'message')}
               value={this.state.message}
@@ -162,11 +224,7 @@ class Chat extends Component {
               style={chat.sendButton}
               onPress={() => this.state.message.length > 0 && this.sendMessage()}
             >
-              {
-                this.props.messages.isLoading
-                  ? <LoadingIcon />
-                  : <FontAwesomeIcon style={chat.sendButtonIcon} icon={faPaperPlane} size={25} />
-              }
+              <FontAwesomeIcon style={chat.sendButtonIcon} icon={faPaperPlane} size={25} />
             </Text>
           </View>
         </View>  
@@ -182,7 +240,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = {
   getConversationsMessage,
-  addMessage
+  addMessage,
+  setMessageStatus,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Chat);
