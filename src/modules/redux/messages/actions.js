@@ -96,3 +96,27 @@ export const getConversationsMessage = (token, senderID, receiverID) => {
     }),
   };
 };
+export const setMessageStatus = (token, senderID, receiverID) => {
+  return {
+    type: actionType.SET_MESSAGE_STATUS,
+    payload: Axios({
+      method: 'PATCH',
+      url: `${apiUri.messages}/set/${senderID}/${receiverID}`,
+      headers: {
+        authorization: token,
+      },
+    }),
+  };
+};
+export const getMessageStatus = (token, receiverID) => {
+  return {
+    type: actionType.GET_MESSAGE_STATUS,
+    payload: Axios({
+      method: 'GET',
+      url: `${apiUri.messages}/get/${receiverID}/${receiverID}`,
+      headers: {
+        authorization: token,
+      },
+    }),
+  };
+};
