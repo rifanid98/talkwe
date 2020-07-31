@@ -5,6 +5,7 @@ import Splash from './Splash';
 import Chat from './Chat';
 import Profile from './Profile';
 import FriendProfile from './FriendProfile';
+import AddChat from './AddChat';
 
 export {
   Home,
@@ -13,7 +14,8 @@ export {
   Splash,
   Chat,
   Profile,
-  FriendProfile
+  FriendProfile,
+  AddChat
 };
 
 export * from './Auth'
