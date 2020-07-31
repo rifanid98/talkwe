@@ -46,7 +46,7 @@ const mapsStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  panelButton: {
+  panelButtonToggle: {
     position: 'absolute',
     bottom: 0,
     right: 0,
@@ -59,11 +59,35 @@ const mapsStyles = StyleSheet.create({
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
   },
+  panelButton: {
+    // position: 'absolute',
+    // bottom: 0,
+    // right: 0,
+    // left: 0,
+    width: '100%',
+    height: 50,
+    backgroundColor: color.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
+  },
+  panel: {
+    height: 300,
+    width: '100%',
+    paddingHorizontal: 50,
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    left: 0,
+    backgroundColor: color.primary,
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
+  },
   line: {
     width: 150,
     borderWidth: 2,
     borderColor: 'black',
-
   },
   label: {
     textAlign: 'left',
@@ -73,7 +97,7 @@ const mapsStyles = StyleSheet.create({
     color: color.accent
   },
   listItems: {
-    flex: 1,
+    // flex: 1,
     width: '100%',
     marginTop: 30,
   },

@@ -21,15 +21,13 @@ const profileStyles = StyleSheet.create({
 
   // profile
   profile: {
-
+    alignItems: 'center'
   },
   image: {
     height: 200,
     width: 200,
     borderRadius: 200,
     marginBottom: 12,
-    borderWidth: 2,
-    borderColor: color.accent
   },
   name: {
     textAlign: 'center',

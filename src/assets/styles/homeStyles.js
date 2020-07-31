@@ -68,8 +68,6 @@ const homeStyles = StyleSheet.create({
     height: 80,
     width: 80,
     borderRadius: 100,
-    borderWidth: 2,
-    borderColor: color.accent,
   },
   friendsListItemName: {
     textAlign: 'center',
@@ -82,6 +80,10 @@ const homeStyles = StyleSheet.create({
   messagesList: {
     flex: 1,
     width: '100%',
+  }, 
+  labelWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center'
   },
   label: {
     fontFamily: font.bodyBold,
@@ -89,6 +91,9 @@ const homeStyles = StyleSheet.create({
     textTransform: 'uppercase',
     color: color.accent,
     paddingVertical: 12
+  },
+  labelBadge: {
+    marginLeft: 12,
   },
   messagesListItems: {
     paddingHorizontal: 22,
@@ -104,8 +109,6 @@ const homeStyles = StyleSheet.create({
     width: 80,
     borderRadius: 100,
     marginRight: 12,
-    borderWidth: 2,
-    borderColor: color.accent,
   },
   messagesListItemContent: {
     flex: 1,
@@ -136,7 +139,14 @@ const homeStyles = StyleSheet.create({
     paddingHorizontal: 7,
     paddingVertical: 2,
     borderRadius: 100
-  }
+  },
+
+  // button
+  addMessageButton: {
+    position: 'absolute',
+    right: 30,
+    bottom: 30,
+  },
 })
 
 export default homeStyles;

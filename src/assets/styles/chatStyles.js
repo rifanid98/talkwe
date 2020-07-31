@@ -27,8 +27,35 @@ const chatStyles = StyleSheet.create({
     height: 80,
     alignItems: 'center',
   },
+  headerSearch: {
+    backgroundColor: color.primary,
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    left: 0,
+    paddingHorizontal: 23,
+    paddingTop: 23,
+    marginTop: 13,
+    flexDirection: 'row',
+    height: 80,
+    alignItems: 'center',
+  },
   menuButton: {
     paddingVertical: 12
+  },
+  headerTitle: {
+    flex: 1,
+    marginLeft: 12,
+    fontFamily: font.heading,
+    fontSize: 20
+  },
+  title: {
+    fontFamily: font.heading,
+    fontSize: 20
+  },
+  small: {
+    fontFamily: font.body,
+    fontSize: 16
   },
   friend: {
     flex: 1,
@@ -53,6 +80,12 @@ const chatStyles = StyleSheet.create({
     fontFamily: font.body,
     fontSize: 14
   },
+  inputSearch: {
+    flex: 1,
+    fontFamily: font.body,
+    fontSize: 16,
+    padding: 12
+  },
 
   // content
   content: {
@@ -71,7 +104,7 @@ const chatStyles = StyleSheet.create({
     marginBottom: 12
   },
   senderMessage: {
-    width: '80%',
+    maxWidth: '80%',
     marginLeft: 12,
   },
   senderText: {
@@ -90,7 +123,7 @@ const chatStyles = StyleSheet.create({
   },
   receiver: {
     marginBottom: 12,
-    width: '80%',
+    maxWidth: '80%',
     alignSelf: 'flex-end'
   },
   receiverMessage: {
@@ -132,6 +165,43 @@ const chatStyles = StyleSheet.create({
   },
   sendButtonIcon: {
     color: color.secondary.strongRed
+  },
+
+
+  contacts: {
+    flex: 1,
+    width: '100%',
+    paddingHorizontal: 12,
+  },
+  contact: {
+    marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  contactImage: {
+    width: 35,
+    height: 35,
+    resizeMode: 'cover',
+    borderRadius: 30
+  },
+  contactInfo: {
+    flex: 1,
+    marginLeft: 12
+  },
+  contactName: {
+    fontFamily: font.bodyBold,
+    fontSize: 18,
+    textTransform: 'capitalize'
+  },
+  contactText: {
+    fontFamily: font.body,
+    fontSize: 14,
+    textTransform: 'capitalize'
+  },
+  contactStatus: {
+    fontFamily: font.bodyBold,
+    fontSize: 16,
+    color: color.accent
   }
 })
 
