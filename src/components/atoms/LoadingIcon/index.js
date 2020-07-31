@@ -2,11 +2,11 @@ import React from 'react'
 import { View, Image } from 'react-native';
 import { globalStyles as styles } from 'assets';
 
-const LoadingIcon = () => {
+const LoadingIcon = (props) => {
   return (
     <>
       <Image
-        style={styles.loadingIcon}
+        style={[styles.loadingIcon, props.style ? props.style : {}]}
         source={require('assets/images/loading.gif')}
       />
     </>
