@@ -38,8 +38,9 @@ const homeStyles = StyleSheet.create({
   },
   menuIcon: {
     fontSize: 30,
-    paddingVertical: 12,
-    paddingLeft: 12
+    paddingVertical: 20,
+    paddingLeft: 20,
+    marginLeft: 5
   },
 
   // friends list

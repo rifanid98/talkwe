@@ -133,7 +133,8 @@ const mapsStyles = StyleSheet.create({
     fontFamily: font.bodyBold,
     color: color.primary,
     textAlign: 'center',
-    borderRadius: 12
+    borderRadius: 12,
+    marginLeft: 12
   }
 })
 
