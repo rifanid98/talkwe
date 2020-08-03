@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { createStackNavigator } from '@react-navigation/stack';
-import { Home, Chat, Profile, Maps, FriendProfile, AddChat } from 'screens';
+import { Home, Chat, Profile, Maps, FriendProfile, AddChat, FriendsRequest, Notifications } from 'screens';
 
 const Stack = createStackNavigator()
 
@@ -27,6 +27,8 @@ class MainRoute extends Component {
           <Stack.Screen name="addChat" component={AddChat} />
           <Stack.Screen name="profile" component={Profile} />
           <Stack.Screen name="friendProfile" component={FriendProfile} />
+          <Stack.Screen name="friendsRequest" component={FriendsRequest} />
+          <Stack.Screen name="notifications" component={Notifications} />
           <Stack.Screen name="maps" component={Maps} />
         </Stack.Navigator>
       </>
