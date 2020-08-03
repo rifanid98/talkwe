@@ -25,10 +25,7 @@ class Chat extends Component {
   componentDidMount() {
     this.getMessage()
     this.setMessageStatus()
-    this.socket = io(appConfig.url.origin);
-    this.socket.on('privateMessage', (data) => {
-      this.setNewMessage(data)
-    });
+    this._socketio()
   }
   componentWillUnmount() {
     this.socket.disconnect()
@@ -36,6 +33,16 @@ class Chat extends Component {
   }
   componentDidUpdate() {
     
+  }
+
+  /**
+   * Socket.IO Services
+   */
+  _socketio = () => {
+    this.socket = io(appConfig.url.origin);
+    this.socket.on('privateMessage', (data) => {
+      this.setNewMessage(data)
+    });
   }
 
   /**
