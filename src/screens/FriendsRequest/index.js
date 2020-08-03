@@ -100,12 +100,7 @@ class FriendsRequest extends Component {
                     <TouchableOpacity
                       key={friend.id}
                       style={chat.contact}
-                      onPress={() => this.goToChat({
-                        id: friend.user_id2,
-                        full_name: friend.full_name,
-                        image: friend.image,
-                        online: friend.online
-                      })}
+                      onPress={() => this.props.navigation.navigate('friendProfile', { senderID: friend.user_id1 })}
                     >
                       <Image
                         style={chat.contactImage}
