@@ -2,14 +2,24 @@ import React, { Component } from 'react'
 import { Text, View, Image, TouchableOpacity, TouchableOpacityBase, Alert } from 'react-native';
 import { globalStyles as global, homeStyles as home, colorScheme as color} from 'assets';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faMapMarkedAlt, faUser, faCommentDots } from '@fortawesome/free-solid-svg-icons'
+import { faMapMarkedAlt, faUserCircle, faCommentDots, faUserFriends, faBell } from '@fortawesome/free-solid-svg-icons'
 import { ScrollView } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
-import { getFriendsList, getMessagesList, getMessageStatus, patchUser, setLocation } from 'modules';
+import {
+  getFriendsList,
+  getMessagesList,
+  getMessageStatus,
+  patchUser,
+  setLocation,
+  getFriendsRequest,
+  getNewNotification,
+  addNotification
+} from 'modules';
 import io from 'socket.io-client';
 import { appConfig } from 'configs';
-import { convertDate, getPassedTime, createFormData } from 'utils';
+import { convertDate, getPassedTime, createFormData, createUrlParamFromObj } from 'utils';
 import Geolocation from 'react-native-geolocation-service';
+import { BadgeNotification } from 'components';
 
 class Home extends Component {
   constructor(props) {
@@ -20,6 +30,7 @@ class Home extends Component {
         longitude: 0,
       },
       friendsList: [],
+      friendsRequest: [],
       messagesList: [],
       unreadMessages: [],
     }
@@ -32,14 +43,17 @@ class Home extends Component {
     this.getMessagesList()
     this.getFriendsList()
     this.getMessageStatus()
+    this.getFriendsRequest()
+    this.getNewNotification()
     this.socket = io(appConfig.url.origin);
-    // this.socket.on('deleteUnreadMessages', (data) => {
-    //   console.log(data)
-    //   this.deleteUnreadMessages(senderID)
-    // });
     this.socket.on('privateMessage', (data) => {
-      if (data.sender_id === this.props.auth.data.id) {
-        this.getMessagesList()
+      data.sender_id === this.props.auth.data.id && this.getMessagesList()
+    });
+    this.socket.on('notifications', (data) => {
+      data.receiver_id === this.props.auth.data.id && this.addNotification(data)
+      if (data.sender_id === this.props.auth.data.id ) {
+        this.getFriendsRequest()
+        this.getFriendsList()
       }
     });
     this.socket.on('broadcastMessage', (data) => {
@@ -48,16 +62,14 @@ class Home extends Component {
     setTimeout(() => {
       this.setLocation()
     }, 1000);
-    setTimeout(() => {
-    }, 2000);
   }
   componentWillUnmount() {
     this.socket.disconnect()
     this.socket.removeAllListeners()
   }
   componentDidUpdate() {
-    console.log(this.props.messages, 'messages');
   }
+
   /**
    * API Services
    */
@@ -70,6 +82,22 @@ class Home extends Component {
           this.setState({
             ...this.state,
             friendsList: this.props.friends.data
+          })
+        }).catch((error) => {
+          console.log(error, `get friends lists failed`)
+        })
+      : console.log(`cannot find token`)
+  }
+  getFriendsRequest = () => {
+    const token = this.props.auth.data.tokenLogin;
+    const id = this.props.auth.data.id
+    token
+      ? this.props.getFriendsRequest(token, id)
+        .then((res) => {
+          const friendsRequest = res.value.data.data;
+          this.setState({
+            ...this.state,
+            friendsRequest: friendsRequest
           })
         }).catch((error) => {
           console.log(error, `get friends lists failed`)
@@ -121,6 +149,7 @@ class Home extends Component {
           : Alert.alert('Failed', 'Update Location Failed.')
       })
   }
+  
   /**
    * Logic
    */
@@ -204,6 +233,28 @@ class Home extends Component {
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
     );
   };
+  getNewNotification = () => {
+    const id = this.props.auth.data.id;
+    this.props.getNewNotification(id)
+  }
+  addNotification = (data) => {
+    const id = this.props.auth.data.id;
+    console.log(id)
+    if (id === null) return;
+    const notifData = {
+      user_id: id,
+      message: data.message,
+      read: 0
+    }
+    this.props.addNotification(notifData) 
+    this.getNewNotification()
+    this.getFriendsList()
+    this.setState({
+      ...this.state,
+      friendsRequest: data.data
+    })
+  }
+
   /**
    * DOM Render
    */
@@ -215,8 +266,55 @@ class Home extends Component {
           <View style={home.header}>
             <Text style={home.title}>Messages</Text>
             <View style={home.menu}>
-              <Text style={home.menuIcon} onPress={() => this.props.navigation.navigate('maps')}> <FontAwesomeIcon icon={faMapMarkedAlt} size={20} /> </Text>
-              <Text style={home.menuIcon} onPress={() => this.props.navigation.navigate('profile')}> <FontAwesomeIcon icon={faUser} size={20} /> </Text>
+              <Text
+                style={home.menuIcon}
+                onPress={() => this.props.navigation.navigate('maps')}>
+                <FontAwesomeIcon
+                  icon={faMapMarkedAlt}
+                  size={20} />
+              </Text>
+              <View
+                style={[
+                  home.menuIcon,
+                  global.relative, 
+                  {
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                  }]}>
+                <Text
+                  onPress={() => this.props.navigation.navigate('friendsRequest', {
+                    friendsRequest: this.state.friendsRequest
+                  })}>
+                  <FontAwesomeIcon
+                    icon={faUserFriends}
+                    size={20} />
+                </Text>
+                {this.state.friendsRequest
+                  && this.state.friendsRequest.length > 0
+                  && <BadgeNotification />}
+              </View>
+              <View
+                style={[
+                  home.menuIcon,
+                  global.relative,
+                  {
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                  }]}>
+                <Text
+                  onPress={() => this.props.navigation.navigate('notifications')}>
+                  <FontAwesomeIcon
+                    icon={faBell}
+                    size={20} />
+                </Text>
+                {this.props.notifications.getNewNotifications.length > 0 && <BadgeNotification />}
+              </View>
+              <Text
+                style={home.menuIcon}
+                onPress={() => this.props.navigation.navigate('profile')}>
+                <FontAwesomeIcon
+                  icon={faUserCircle}
+                  size={20} /> </Text>
             </View>
           </View>
           {/* friends list */}
@@ -311,7 +409,8 @@ const mapStateToProps = (state) => ({
   auth: state.auth,
   friends: state.friends,
   messages: state.messages,
-  location: state.location
+  location: state.location,
+  notifications: state.notifications
 })
 
 const mapDispatchToProps = {
@@ -319,7 +418,10 @@ const mapDispatchToProps = {
   getMessagesList,
   getMessageStatus,
   setLocation,
-  patchUser
+  patchUser,
+  getFriendsRequest,
+  getNewNotification,
+  addNotification
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
