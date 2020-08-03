@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, View, Image, TouchableOpacity, TouchableOpacityBase, Alert } from 'react-native';
+import { Text, View, Image, TouchableOpacity, TouchableOpacityBase, Alert, Platform, PermissionsAndroid } from 'react-native';
 import { globalStyles as global, homeStyles as home, colorScheme as color} from 'assets';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faMapMarkedAlt, faUserCircle, faCommentDots, faUserFriends, faBell } from '@fortawesome/free-solid-svg-icons'
@@ -39,35 +39,45 @@ class Home extends Component {
   /**
    * Life Cycles
    */
-  componentDidMount() {
+  async componentDidMount() {
+    await this.requestPermissions()
     this.getMessagesList()
     this.getFriendsList()
     this.getMessageStatus()
     this.getFriendsRequest()
     this.getNewNotification()
+    this._socketio()
+    this.setLocation()
+  }
+  componentWillUnmount() {
+    if (this.socket) {
+      this.socket.disconnect()
+      this.socket.removeAllListeners()
+    }
+  }
+  componentDidUpdate() {
+  }
+
+  /**
+   * Socket.IO Services
+   */
+  _socketio = () => {
     this.socket = io(appConfig.url.origin);
     this.socket.on('privateMessage', (data) => {
       data.sender_id === this.props.auth.data.id && this.getMessagesList()
+      data.receiver_id === this.props.auth.data.id && this.setUnreadMessages(data)
     });
     this.socket.on('notifications', (data) => {
       data.receiver_id === this.props.auth.data.id && this.addNotification(data)
-      if (data.sender_id === this.props.auth.data.id ) {
+      if (data.message.search('accepted')) {
+        this.getFriendsRequest()
+        this.getFriendsList()
+      }
+      if (data.sender_id === this.props.auth.data.id) {
         this.getFriendsRequest()
         this.getFriendsList()
       }
     });
-    this.socket.on('broadcastMessage', (data) => {
-      this.setUnreadMessages(data)
-    });
-    setTimeout(() => {
-      this.setLocation()
-    }, 1000);
-  }
-  componentWillUnmount() {
-    this.socket.disconnect()
-    this.socket.removeAllListeners()
-  }
-  componentDidUpdate() {
   }
 
   /**
@@ -149,6 +159,49 @@ class Home extends Component {
           : Alert.alert('Failed', 'Update Location Failed.')
       })
   }
+
+  /**
+ * Geolocation API
+ */
+  async requestPermissions() {
+    if (Platform.OS === 'ios') {
+      Geolocation.requestAuthorization();
+      Geolocation.setRNConfiguration({
+        skipPermissionRequests: false,
+        authorizationLevel: 'whenInUse',
+      });
+    }
+
+    if (Platform.OS === 'android') {
+      await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      );
+    }
+  }
+  setLocation = () => {
+    setTimeout(() => {
+      Geolocation.getCurrentPosition(
+        (position) => {
+          this.setState({
+            ...this.state,
+            location: {
+              ...this.state.location,
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude
+            }
+          }, () => {
+            this.props.setLocation(this.state.location)
+            this.updateUser({ location: `${this.state.location.latitude},${this.state.location.longitude}` })
+          })
+        },
+        (error) => {
+          // See error code charts below.
+          console.log(error.code, error.message);
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+      );
+    }, 1000);
+  };
   
   /**
    * Logic
@@ -167,9 +220,7 @@ class Home extends Component {
   }
   deleteUnreadMessages = (senderID) => {
     let unreadMessages = this.state.unreadMessages;
-    console.log(unreadMessages, 'unreadMessage');
     unreadMessages.map((unreadMessage, index) => {
-      console.log(unreadMessages[index].sender_id, 'sender id');
       if (unreadMessages[index].sender_id === senderID) {
         if (unreadMessages.length < 2) {
           unreadMessages = [];
@@ -185,7 +236,7 @@ class Home extends Component {
   }
   setUnreadMessages = async (data) => {
     const unreadMessages = this.state.unreadMessages;
-    if (data.receiver_id === this.props.auth.data.id) {
+    // if (data.receiver_id === this.props.auth.data.id) {
       let count = 0;
       let newIndex = 0;
       await unreadMessages.map((unreadMessage, index) => {
@@ -209,30 +260,8 @@ class Home extends Component {
       })
       this.getMessagesList()
       // this.getNewMessagesList()
-    }
+    // }
   }
-  setLocation = () => {
-    Geolocation.getCurrentPosition(
-      (position) => {
-        this.setState({
-          ...this.state,
-          location: {
-            ...this.state.location,
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude
-          }
-        }, () => {
-            this.props.setLocation(this.state.location)
-            this.updateUser({ location: `${this.state.location.latitude},${this.state.location.longitude}`})
-        })
-      },
-      (error) => {
-        // See error code charts below.
-        console.log(error.code, error.message);
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-    );
-  };
   getNewNotification = () => {
     const id = this.props.auth.data.id;
     this.props.getNewNotification(id)
@@ -266,25 +295,30 @@ class Home extends Component {
           <View style={home.header}>
             <Text style={home.title}>Messages</Text>
             <View style={home.menu}>
-              <Text
-                style={home.menuIcon}
-                onPress={() => this.props.navigation.navigate('maps')}>
-                <FontAwesomeIcon
-                  icon={faMapMarkedAlt}
-                  size={20} />
-              </Text>
-              <View
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate('maps')}
+              >
+                <Text
+                  style={home.menuIcon}
+                >
+                  <FontAwesomeIcon
+                    icon={faMapMarkedAlt}
+                    size={20} />
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
                 style={[
                   home.menuIcon,
                   global.relative, 
                   {
                     justifyContent: 'center',
                     alignItems: 'center'
-                  }]}>
-                <Text
-                  onPress={() => this.props.navigation.navigate('friendsRequest', {
-                    friendsRequest: this.state.friendsRequest
-                  })}>
+                  }]}
+                onPress={() => this.props.navigation.navigate('friendsRequest', {
+                  friendsRequest: this.state.friendsRequest
+                })}
+              >
+                <Text>
                   <FontAwesomeIcon
                     icon={faUserFriends}
                     size={20} />
@@ -292,29 +326,35 @@ class Home extends Component {
                 {this.state.friendsRequest
                   && this.state.friendsRequest.length > 0
                   && <BadgeNotification />}
-              </View>
-              <View
+              </TouchableOpacity>
+              <TouchableOpacity
                 style={[
                   home.menuIcon,
                   global.relative,
                   {
                     justifyContent: 'center',
                     alignItems: 'center'
-                  }]}>
-                <Text
-                  onPress={() => this.props.navigation.navigate('notifications')}>
+                  }]}
+                onPress={() => this.props.navigation.navigate('notifications')}
+              >
+                <Text>
                   <FontAwesomeIcon
                     icon={faBell}
                     size={20} />
                 </Text>
                 {this.props.notifications.getNewNotifications.length > 0 && <BadgeNotification />}
-              </View>
-              <Text
-                style={home.menuIcon}
-                onPress={() => this.props.navigation.navigate('profile')}>
-                <FontAwesomeIcon
-                  icon={faUserCircle}
-                  size={20} /> </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate('profile')}
+              >
+                <Text
+                  style={home.menuIcon}
+                  >
+                  <FontAwesomeIcon
+                    icon={faUserCircle}
+                    size={20} />
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
           {/* friends list */}
