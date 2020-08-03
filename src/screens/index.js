@@ -6,6 +6,8 @@ import Chat from './Chat';
 import Profile from './Profile';
 import FriendProfile from './FriendProfile';
 import AddChat from './AddChat';
+import FriendsRequest from './FriendsRequest';
+import Notifications from './Notifications';
 
 export {
   Home,
@@ -15,7 +17,9 @@ export {
   Chat,
   Profile,
   FriendProfile,
-  AddChat
+  AddChat,
+  FriendsRequest,
+  Notifications
 };
 
 export * from './Auth'
