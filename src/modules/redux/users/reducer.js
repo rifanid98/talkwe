@@ -96,6 +96,27 @@ const users = (state = initialState, action) => {
         errorMsg: '',
       };
 
+    case actionType.GET_USERS_LIST_PENDING:
+      return {
+        ...state,
+        isLoading: true,
+        isError: false,
+      };
+    case actionType.GET_USERS_LIST_REJECTED:
+      return {
+        ...state,
+        isLoading: false,
+        isError: true,
+        errorMsg: 'Data Rejected',
+      };
+    case actionType.GET_USERS_LIST_FULFILLED:
+      return {
+        ...state,
+        isLoading: false,
+        isError: false,
+        errorMsg: '',
+      };
+
     default:
       return state;
   }
