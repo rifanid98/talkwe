@@ -70,3 +70,16 @@ export const getDetailUser = (token, id) => {
     }),
   };
 };
+export const getUsersList = (token, id) => {
+  const getId = id ? `/${id}` : '';
+  return {
+    type: actionType.GET_USERS_LIST,
+    payload: Axios({
+      method: 'GET',
+      url: `${apiUri.users}${getId}/list`,
+      headers: {
+        authorization: token,
+      },
+    }),
+  };
+};
