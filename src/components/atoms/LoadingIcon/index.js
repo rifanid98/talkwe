@@ -5,10 +5,17 @@ import { globalStyles as styles } from 'assets';
 const LoadingIcon = (props) => {
   return (
     <>
-      <Image
-        style={[styles.loadingIcon, props.style ? props.style : {}]}
-        source={require('assets/images/loading.gif')}
-      />
+      {
+        props.type === 2
+          ? <Image
+            style={[styles.loadingIcon, props.style ? props.style : {}]}
+            source={require('assets/images/loading2.gif')}
+          />
+          : <Image
+            style={[styles.loadingIcon, props.style ? props.style : {}]}
+            source={require('assets/images/loading.gif')}
+          />
+      }
     </>
   )
 }
