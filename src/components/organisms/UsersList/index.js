@@ -8,7 +8,9 @@ import { getDistance } from 'geolib';
 import { addFriend } from 'modules'
 import { createFormData } from 'utils';
 
-
+String.prototype.capitalize = function () {
+  return this.charAt(0).toUpperCase() + this.slice(1);
+}
 class UsersList extends Component {
   constructor(props) {
     super(props)
@@ -34,6 +36,8 @@ class UsersList extends Component {
   async componentDidMount() {
     this.getUsersList()
     console.log('didmount');
+  }
+  componentDidUpdate() {
   }
 
   /**
@@ -72,7 +76,8 @@ class UsersList extends Component {
             Alert.alert('Friend request has been sent', `${friendName} will appear on the friends list if a friend request has been received`)
           }
         }).catch((error) => {
-          console.log(error, `get users lists failed`)
+          error.response.status === 409 && Alert.alert(`${friendName.capitalize()} has sent you a friend request`, 'Please check your notifications.')
+          console.log(error.response.status, `get add friend failed`)
         })
       : console.log(`cannot find token`)
   }
@@ -120,7 +125,7 @@ class UsersList extends Component {
               ? <ScrollView style={maps.listItems} showsVerticalScrollIndicator={false} >
                 {
                   this.state.usersList.map((user, index) => {
-                    if (this._getDistance(user.location) < 1 && user.id !== this.props.auth.data.id && user.user_id1 === null && user.location_share === 1) {
+                    if (this._getDistance(user.location) > 0 && user.id !== this.props.auth.data.id && user.user_id1 === null && user.location_share === 1) {
                       return (
                         <TouchableOpacity
                           key={index}
@@ -137,15 +142,20 @@ class UsersList extends Component {
                           </View>
                           <View style={maps.itemAction}>
                             <Text style={maps.distance}>{this._getDistance(user.location)} KM</Text>
-                            {
-                              this.props.users.isLoading 
-                                ? <View style={maps.button}>
-                                    <LoadingIcon style={{height: 20, width: 20}} />
-                                  </View>
-                                : <Text
-                                  style={maps.button}
-                                  onPress={() => this.addFriend(user.id, user.full_name)}>ADD</Text>
-                            }
+                            <View style={{flexDirection: 'row'}}>
+                              <Text
+                                style={maps.button}
+                                onPress={() => this.props.navigation.navigate('friendProfile', { senderID: user.id })}
+                              >
+                                VIEW
+                            </Text>
+                              <Text
+                                style={maps.button}
+                                onPress={() => this.addFriend(user.id, user.full_name)}
+                              >
+                                ADD
+                            </Text>
+                            </View>
                           </View>
                         </TouchableOpacity>
                       )
