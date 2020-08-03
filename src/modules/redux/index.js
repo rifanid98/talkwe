@@ -17,6 +17,7 @@ import apps from './apps/reducer';
 import friends from './friends/reducer';
 import messages from './messages/reducer';
 import location from './location/reducer';
+import notifications from './notifications/reducer';
 
 
 // Combine The Reducers
@@ -26,7 +27,8 @@ const reducer = combineReducers({
   apps,
   friends,
   messages,
-  location
+  location,
+  notifications
 });
 
 /**
@@ -41,7 +43,8 @@ const persistConfig = {
     'friends',
     'messages',
     'users',
-    'location'
+    'location',
+    'notifications'
   ],
 };
 
@@ -52,8 +55,8 @@ const persistedReducer = persistReducer(persistConfig, reducer);
  */
 export const store = createStore(
   persistedReducer,
-  // applyMiddleware(reduxPromise)
-  applyMiddleware(reduxPromise, logger),
+  applyMiddleware(reduxPromise)
+  // applyMiddleware(reduxPromise, logger),
 );
 
 /**
@@ -65,6 +68,7 @@ export * from './apps/actions';
 export * from './friends/actions';
 export * from './messages/actions';
 export * from './location/actions';
+export * from './notifications/actions';
 
 /**
  * selector
