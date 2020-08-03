@@ -4,8 +4,7 @@ import { colorScheme as color, font } from '.';
 const mapsStyles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: 'column',
     backgroundColor: color.primary,
   },
   header: {
@@ -20,13 +19,23 @@ const mapsStyles = StyleSheet.create({
   maps: {
     flex: 1,
     width: '100%',
-    height: 300
   },
+  markerImage: {
+    width: 30,
+    height: 30,
+    borderRadius: 100
+  },
+
+
   panel: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    left: 0
+    flex: 1,
+    width: '100%',
+    paddingHorizontal: 50,
+    paddingTop: 30,
+    backgroundColor: color.primary,
+    // borderTopRightRadius: 20,
+    // borderTopLeftRadius: 20,
+    alignItems: 'center',
   },
   panelContainer: {
     flex: 1,
@@ -60,10 +69,6 @@ const mapsStyles = StyleSheet.create({
     borderTopLeftRadius: 20,
   },
   panelButton: {
-    // position: 'absolute',
-    // bottom: 0,
-    // right: 0,
-    // left: 0,
     width: '100%',
     height: 50,
     backgroundColor: color.primary,
@@ -72,18 +77,7 @@ const mapsStyles = StyleSheet.create({
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
   },
-  panel: {
-    height: 300,
-    width: '100%',
-    paddingHorizontal: 50,
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    left: 0,
-    backgroundColor: color.primary,
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
-  },
+  
   line: {
     width: 150,
     borderWidth: 2,
@@ -116,7 +110,8 @@ const mapsStyles = StyleSheet.create({
   },
   name: {
     fontFamily: font.bodyBold,
-    fontSize: 20
+    fontSize: 20,
+    textTransform: 'capitalize'
   },
   status: {
     fontFamily: font.body,
@@ -124,7 +119,7 @@ const mapsStyles = StyleSheet.create({
   },
   itemAction: {
     // padding: 12,
-    alignItems: 'center'
+    alignItems: 'flex-end'
   },
   distance: {
     fontFamily: font.bodyBold,
