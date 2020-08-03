@@ -84,3 +84,28 @@ export const getFriendsList = (token, id) => {
     }),
   };
 };
+export const getFriendsRequest = (token, id) => {
+  const getId = id ? `/${id}` : '';
+  return {
+    type: actionType.GET_FRIENDS_REQUEST,
+    payload: Axios({
+      method: 'GET',
+      url: `${apiUri.friends}${getId}/request`,
+      headers: {
+        authorization: token,
+      },
+    }),
+  };
+};
+export const confirmFriendRequest = (token, userID, friendID, action) => {
+  return {
+    type: actionType.CONFIRM_FRIEND_REQUEST,
+    payload: Axios({
+      method: 'PATCH',
+      url: `${apiUri.friends}/${userID}/${friendID}/${action}`,
+      headers: {
+        authorization: token,
+      },
+    }),
+  };
+};
