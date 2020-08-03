@@ -16,11 +16,9 @@ class Notifications extends Component {
    * Life Cyvles
    */
   componentDidMount() {
-    console.log(this.props.notifications);
     this.getNotifications()
   }
   componentDidUpdate() {
-    console.log(this.props.notifications);
   }
 
   /**
@@ -43,6 +41,7 @@ class Notifications extends Component {
   deleteNotification = () => {
     const id = this.props.auth.data.id;
     this.props.deleteNotification(id)
+    this.readNotification()
     this.getNotifications()
   }
   render() {
