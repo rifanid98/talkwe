@@ -67,7 +67,9 @@ const notifications = (state = initialState, action) => {
       var user_id = action.payload
       notifications.map((notif, index) => {
         if (parseInt(notif.user_id) === parseInt(user_id)) {
-          delete notifications[index]
+          if (index > - 1) {
+            notifications.splice(index, 1)
+          }
         }
       })
       return {
