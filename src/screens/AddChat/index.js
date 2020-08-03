@@ -39,6 +39,8 @@ class AddChat extends Component {
           this.setState({
             ...this.state,
             friendsList: this.props.friends.data
+          }, () => {
+            console.log(this.state.friendsList, 'add chat')
           })
         }).catch((error) => {
           console.log(error, `get friends lists failed`)
@@ -109,7 +111,7 @@ class AddChat extends Component {
                       key={friend.id}
                       style={chat.contact}
                       onPress={() => this.goToChat({
-                        id: friend.user_id2,
+                        id: friend.user_id2 === this.props.auth.data.id ? friend.user_id1 : friend.user_id2,
                         full_name: friend.full_name,
                         image: friend.image,
                         online: friend.online
