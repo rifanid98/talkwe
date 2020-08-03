@@ -5,27 +5,33 @@ import MapView, { Marker } from 'react-native-maps';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import Geolocation from 'react-native-geolocation-service';
-import { getFriendsList } from 'modules';
+import { getFriendsList, getUsersList } from 'modules';
 import { connect } from 'react-redux';
 import { LoadingIcon, FriendsList, UsersList } from 'components';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 const Tab = createMaterialTopTabNavigator();
-
+String.prototype.capitalize = function () {
+  return this.charAt(0).toUpperCase() + this.slice(1);
+}
 class Maps extends Component {
   constructor(props) {
     super(props)
     const window = Dimensions.get('window');
     const { width, height } = window;
-    const longitudeDelta = 0.0922 + (width / height)
+    const latitude = parseFloat(this.props.auth.data.location.split(',')[0]);
+    const longitude = parseFloat(this.props.auth.data.location.split(',')[1]);
+    const latitudeDelta = 0.0922;
+    const longitudeDelta = 0.0922 + (width / height);
     this.state = {
       togglePanel: false,
       location: {
-        latitude: -6.2265687,
-        longitude: 106.8544006,
-        latitudeDelta: 0.0922,
+        latitude: latitude,
+        longitude: longitude,
+        latitudeDelta: latitudeDelta,
         longitudeDelta: longitudeDelta
-      }
+      },
+      usersList: [],
     }
   }
 
@@ -36,6 +42,7 @@ class Maps extends Component {
     await this.requestPermissions()
     this.findCoordinates()
     this.getFriendsList()
+    this.getUsersList()
   }
 
   /**
@@ -56,6 +63,23 @@ class Maps extends Component {
         })
       : console.log(`cannot find token`)
   }
+  getUsersList = () => {
+    const token = this.props.auth.data.tokenLogin;
+    const id = this.props.auth.data.id
+    token
+      ? this.props.getUsersList(token, id)
+        .then((res) => {
+          const usersList = res.value.data.data;
+          this.setState({
+            ...this.state,
+            usersList: usersList
+          })
+        }).catch((error) => {
+          console.log(error, `get users lists failed`)
+        })
+      : console.log(`cannot find token`)
+  }
+  
   /**
    * Geolocation API
    */
@@ -134,25 +158,52 @@ class Maps extends Component {
             latitudeDelta: this.state.location.latitudeDelta,
             longitudeDelta: this.state.location.longitudeDelta,
           }}
-          animateToRegion={{
-            region: this.state.location,
-            duration: 1000
-          }}
           showsUserLocation={true}
         >
+          <Marker
+            coordinate={{
+              latitude: parseFloat(this.props.auth.data.location.split(',')[0]),
+              longitude: parseFloat(this.props.auth.data.location.split(',')[1])
+            }}
+            title={this.props.auth.data.full_name.split(' ')[0]}
+            description="Your position"
+          >
+            <Image source={{ uri: this.props.auth.data.image }} style={maps.markerImage} />
+          </Marker>
+          {/* FriendsList Markers */}
           {
             this.props.friends.data && this.props.friends.data.length > 0
-              && this.props.friends.data.map(friend => {
+              && this.props.friends.data.map((friend, index) => {
                 return (
                   <Marker
+                    key={index}
                     coordinate={{
                       latitude: parseFloat(friend.location.split(',')[0]),
                       longitude: parseFloat(friend.location.split(',')[1])
                     }}
-                    title={friend.full_name.split(' ')[0]}
-                    description={`${friend.full_name}'s position`}
+                    title={friend.full_name.split(' ')[0].capitalize()}
+                    description={`${friend.full_name.capitalize()}'s position`}
                   >
                     <Image source={{ uri: friend.image }} style={maps.markerImage} />
+                  </Marker>
+                )
+              })
+          }
+          {/* UsersList Markers */}
+          {
+            this.state.usersList && this.state.usersList.length > 0
+              && this.state.usersList.map((user, index) => {
+                return (
+                  <Marker
+                    key={index}
+                    coordinate={{
+                      latitude: parseFloat(user.location.split(',')[0]),
+                      longitude: parseFloat(user.location.split(',')[1])
+                    }}
+                    title={user.full_name.split(' ')[0].capitalize()}
+                    description={`${user.full_name.capitalize()}'s position`}
+                  >
+                    <Image source={{ uri: user.image }} style={maps.markerImage} />
                   </Marker>
                 )
               })
@@ -161,7 +212,6 @@ class Maps extends Component {
         <View style={{
           flex: 1
         }}>
-        {/* <View style={maps.panel}> */}
           <Tab.Navigator
             initialRouteName="friendsList"
             backBehavior="initialRoute"
@@ -184,7 +234,7 @@ class Maps extends Component {
               {() => <FriendsList goToFriendCoordinates={(coords) => this.goToFriendCoordinates(coords)} />}
             </Tab.Screen>
             <Tab.Screen name="usersList" options={{ title: 'USERS LIST' }}>
-              {() => <UsersList goToFriendCoordinates={(coords) => this.goToFriendCoordinates(coords)} />}
+              {() => <UsersList goToFriendCoordinates={(coords) => this.goToFriendCoordinates(coords)} {...this.props}/>}
             </Tab.Screen>
           </Tab.Navigator>
         </View>
@@ -200,6 +250,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = {
   getFriendsList,
+  getUsersList
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Maps);
