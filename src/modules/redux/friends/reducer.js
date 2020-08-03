@@ -119,6 +119,48 @@ const friends = (state = initialState, action) => {
         data: action.payload.data.data,
       };
 
+    case actionType.GET_FRIENDS_REQUEST_PENDING:
+      return {
+        ...state,
+        isLoading: true,
+        isError: false,
+      };
+    case actionType.GET_FRIENDS_REQUEST_REJECTED:
+      return {
+        ...state,
+        isLoading: false,
+        isError: true,
+        errorMsg: 'Data Rejected',
+      };
+    case actionType.GET_FRIENDS_REQUEST_FULFILLED:
+      return {
+        ...state,
+        isLoading: false,
+        isError: false,
+        errorMsg: '',
+      };
+
+    case actionType.CONFIRM_FRIEND_REQUEST_PENDING:
+      return {
+        ...state,
+        isLoading: true,
+        isError: false,
+      };
+    case actionType.CONFIRM_FRIEND_REQUEST_REJECTED:
+      return {
+        ...state,
+        isLoading: false,
+        isError: true,
+        errorMsg: 'Data Rejected',
+      };
+    case actionType.CONFIRM_FRIEND_REQUEST_FULFILLED:
+      return {
+        ...state,
+        isLoading: false,
+        isError: false,
+        errorMsg: '',
+      };
+
     default:
       return state;
   }
