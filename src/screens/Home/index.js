@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Text, View, Image, TouchableOpacity, TouchableOpacityBase, Alert, Platform, PermissionsAndroid } from 'react-native';
+import NetInfo from "@react-native-community/netinfo";
 import { globalStyles as global, homeStyles as home, colorScheme as color} from 'assets';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faMapMarkedAlt, faUserCircle, faCommentDots, faUserFriends, faBell } from '@fortawesome/free-solid-svg-icons'
@@ -33,6 +34,7 @@ class Home extends Component {
       friendsRequest: [],
       messagesList: [],
       unreadMessages: [],
+      usersOnline: []
     }
   }
 
@@ -47,6 +49,7 @@ class Home extends Component {
     this.getFriendsRequest()
     this.getNewNotification()
     this._socketio()
+    this._subscribe()
     this.setLocation()
   }
   componentWillUnmount() {
@@ -77,6 +80,18 @@ class Home extends Component {
         this.getFriendsRequest()
         this.getFriendsList()
       }
+    });
+  }
+
+  /**
+   * NetInfo API
+   */
+  _subscribe = () => {
+    NetInfo.addEventListener(state => {
+      console.log("Connection type", state.type);
+      state.isConnected
+        ? this.updateOnlineStatus(1)
+        : this.updateOnlineStatus(0)
     });
   }
 
@@ -159,6 +174,24 @@ class Home extends Component {
           : Alert.alert('Failed', 'Update Location Failed.')
       })
   }
+  updateOnlineStatus = (onlineStatus) => {
+    const token = this.props.auth.data.tokenLogin;
+    const user_id = this.props.auth.data.id;
+    const data = {
+      online: onlineStatus
+    }
+    const formData = createFormData(data)
+    this.props.patchUser(token, formData, user_id)
+      .then((res) => {
+        console.log('Location updated');
+      })
+      .catch((error) => {
+        console.log(error);
+        error.response.data.message
+          ? Alert.alert('Failed', error.response.data.message)
+          : Alert.alert('Failed', 'Update Location Failed.')
+      })
+  }
 
   /**
  * Geolocation API
@@ -201,10 +234,32 @@ class Home extends Component {
         { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
       );
     }, 1000);
+    setInterval(() => {
+      Geolocation.getCurrentPosition(
+        (position) => {
+          this.setState({
+            ...this.state,
+            location: {
+              ...this.state.location,
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude
+            }
+          }, () => {
+            this.props.setLocation(this.state.location)
+            this.updateUser({ location: `${this.state.location.latitude},${this.state.location.longitude}` })
+          })
+        },
+        (error) => {
+          // See error code charts below.
+          console.log(error.code, error.message);
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+      );
+    }, 1000 * 60 * 30); //every 30mins
   };
-  
+ 
   /**
-   * Logic
+   * Logics
    */
   goToChat = (data) => {
     this.deleteUnreadMessages(data.id)
@@ -371,17 +426,42 @@ class Home extends Component {
               {
                 (this.state.friendsList && this.state.friendsList.length > 0)
                 && this.state.friendsList.map((friend, index) => {
+                  if (friend.online === 1) {
                     return (
-                      <View style={home.friendsListItem}>
+                      <View
+                        key={index}
+                        style={[home.friendsListItem, global.relative]}>
                         <Image
-                          key={index}
                           style={home.friendsListItemImage}
                           source={{ uri: friend.image }}
                         />
                         <Text style={home.friendsListItemName}>{friend.full_name.split(' ')[0]}</Text>
+                        <View style={{
+                          height: 15,
+                          width: 15,
+                          backgroundColor: 'lightgreen',
+                          borderRadius: 100,
+                          position: 'absolute', 
+                          bottom: 30,
+                          right: 0
+                        }}></View>
                       </View>
                     )
-                  })
+                    } else {
+                      return (
+                        <View
+                          key={index}
+                          style={home.friendsListItem}>
+                          <Image
+                            key={index}
+                            style={home.friendsListItemImage}
+                            source={{ uri: friend.image }}
+                          />
+                          <Text style={home.friendsListItemName}>{friend.full_name.split(' ')[0]}</Text>
+                        </View>
+                      )
+                    }
+                  }) 
               }
             </ScrollView>
           </View>
