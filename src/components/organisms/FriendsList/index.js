@@ -104,10 +104,33 @@ class FriendsList extends Component {
                       style={maps.listItem}
                       onPress={() => this.props.goToFriendCoordinates(friend.location)}
                     >
-                      <Image
-                        style={maps.itemImage}
-                        source={{ uri: friend.image }}
-                      />
+                      <View style={global.relative}>
+                        <Image
+                          style={maps.itemImage}
+                          source={{ uri: friend.image }}
+                        />
+                        {friend.online === 0
+                          ? <View style={{
+                            height: 12,
+                            width: 12,
+                            backgroundColor: 'lightgrey',
+                            borderRadius: 100,
+                            marginRight: 5,
+                            position: 'absolute',
+                            right: -5,
+                            bottom: 5
+                          }}></View>
+                          : <View style={{
+                            height: 12,
+                            width: 12,
+                            backgroundColor: 'lightgreen',
+                            borderRadius: 100,
+                            marginRight: 5,
+                            position: 'absolute',
+                            right: -5,
+                            bottom: 5
+                          }}></View>}
+                      </View>
                       <View style={maps.itemContent}>
                         <Text style={maps.name}>{friend.full_name}</Text>
                         <Text style={maps.status}>My status is here!</Text>

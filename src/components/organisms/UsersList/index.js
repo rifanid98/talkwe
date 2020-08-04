@@ -125,17 +125,40 @@ class UsersList extends Component {
               ? <ScrollView style={maps.listItems} showsVerticalScrollIndicator={false} >
                 {
                   this.state.usersList.map((user, index) => {
-                    if (this._getDistance(user.location) > 0 && user.id !== this.props.auth.data.id && user.user_id1 === null && user.location_share === 1) {
+                    if (this._getDistance(user.location) <= 1 && user.id !== this.props.auth.data.id && user.user_id1 === null && user.location_share === 1) {
                       return (
                         <TouchableOpacity
                           key={index}
                           style={maps.listItem}
                           onPress={() => this.props.goToFriendCoordinates(user.location)}
                         >
-                          <Image
-                            style={maps.itemImage}
-                            source={{ uri: user.image }}
-                          />
+                          <View style={global.relative}>
+                            <Image
+                              style={maps.itemImage}
+                              source={{ uri: user.image }}
+                            />
+                            {user.online === 0
+                              ? <View style={{
+                                height: 12,
+                                width: 12,
+                                backgroundColor: 'lightgrey',
+                                borderRadius: 100,
+                                marginRight: 5,
+                                position: 'absolute',
+                                right: -5,
+                                bottom: 5
+                              }}></View>
+                              : <View style={{
+                                height: 12,
+                                width: 12,
+                                backgroundColor: 'lightgreen',
+                                borderRadius: 100,
+                                marginRight: 5,
+                                position: 'absolute',
+                                right: -5,
+                                bottom: 5
+                              }}></View>}
+                          </View>
                           <View style={maps.itemContent}>
                             <Text style={maps.name}>{user.full_name}</Text>
                             <Text style={maps.status}>My status is here!</Text>
