@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Text, View, Image, TouchableOpacity, TextInput, Alert } from 'react-native';
+import NetInfo from "@react-native-community/netinfo";
 import { globalStyles as global, profileStyles as profile } from 'assets';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faArrowLeft, faMapMarkerAlt, faUserCircle, faSignOutAlt, faEnvelope } from '@fortawesome/free-solid-svg-icons'
@@ -21,7 +22,8 @@ class Profile extends Component {
         email: this.props.auth.data.email,
         password: ''
       },
-      image: null
+      image: null,
+      onlineStatus: true
     }
   }
 
@@ -30,6 +32,19 @@ class Profile extends Component {
    */
   componentDidMount() {
     this.getAddress()
+    this._subscribe()
+  }
+
+  /**
+   * NetInfo API
+   */
+  _subscribe = () => {
+    NetInfo.addEventListener(state => {
+      console.log("Connection type", state.type);
+      state.isConnected
+        ? this.updateOnlineStatus(true)
+        : this.updateOnlineStatus(false)
+    });
   }
 
   /**
@@ -106,14 +121,17 @@ class Profile extends Component {
       });
   }
   getAddress = () => {
-    const latlang = this.props.auth.data.location;
-    this.props.getAddress(latlang)
-      .then(res => {
-        
-      })
-      .catch(error => {
-        console.log(error)
-      })
+    if (this.state.onlineStatus) {
+      const latlang = this.props.auth.data.location;
+      this.props.getAddress(latlang)
+        .then(res => {
+
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    }
+    
   }
   
    /**
@@ -150,6 +168,16 @@ class Profile extends Component {
   logout = () => {
     this.props.logout()
   }
+  updateOnlineStatus = (onlineStatus) => {
+    this.setState({
+      ...this.state,
+      onlineStatus: onlineStatus
+    })
+  }
+
+  /**
+   * DOM Render
+   */
   render() {
     return (
       <>
@@ -185,7 +213,28 @@ class Profile extends Component {
                       <Image style={profile.image} source={{ uri: this.props.auth.data.image }} resizeMethod="resize" />
                     </TouchableOpacity>
             }
-            <Text style={profile.name}>{this.props.auth.data.full_name}</Text>
+            <View style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}>
+              {this.state.onlineStatus
+                ? <View style={{
+                  height: 12,
+                  width: 12,
+                  backgroundColor: 'lightgreen',
+                  borderRadius: 100,
+                  marginRight: 10,
+                }}></View>
+                : <View style={{
+                  height: 12,
+                  width: 12,
+                  backgroundColor: 'lightgrey',
+                  borderRadius: 100,
+                  marginRight: 10,
+                }}></View>}
+              <Text style={profile.name}>{this.props.auth.data.full_name}</Text>
+            </View>
             <Text style={profile.email}>
               <FontAwesomeIcon icon={faEnvelope} />
               {this.props.auth.data.email}
@@ -278,6 +327,7 @@ class Profile extends Component {
       </>
     )
   }
+  
 }
 
 const mapStateToProps = (state) => ({
