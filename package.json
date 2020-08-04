@@ -21,6 +21,7 @@
     "@hookform/resolvers": "0.0.6",
     "@react-native-community/async-storage": "^1.11.0",
     "@react-native-community/masked-view": "^0.1.10",
+    "@react-native-community/netinfo": "^5.9.5",
     "@react-navigation/material-bottom-tabs": "^5.2.15",
     "@react-navigation/material-top-tabs": "^5.2.15",
     "@react-navigation/native": "^5.7.1",
