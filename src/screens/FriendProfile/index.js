@@ -67,7 +67,22 @@ class FriendProfile extends Component {
                         style={profile.image}
                         source={{ uri: this.props.users.data[0].image }}
                       />
-                      <Text style={profile.name}>{this.props.users.data[0].full_name}</Text>
+                      <View style={{
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                      }}>
+                        {
+                          this.props.users.data[0].online === 1 && <View style={{
+                            height: 15,
+                            width: 15,
+                            backgroundColor: 'lightgreen',
+                            borderRadius: 100,
+                            marginRight: 12
+                          }}></View>
+                        }
+                        <Text style={profile.name}>{this.props.users.data[0].full_name}</Text>
+                      </View>
                       <Text style={profile.email}>
                         <FontAwesomeIcon icon={faEnvelope} />
                         {this.props.users.data[0].email}

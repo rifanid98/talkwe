@@ -203,7 +203,29 @@ class Chat extends Component {
               />
               <View style={chat.friendInfo}>
                 <Text style={chat.friendName}>{this.props.route.params.sender.full_name}</Text>
-                <Text style={chat.friendStatus}>{this.props.route.params.sender.online === 0 ? 'Offline' : 'Active Now'}</Text>
+                <View style={{
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                  alignItems: 'center'
+                }}>
+                  {this.props.route.params.sender.online === 0
+                    ? <View style={{
+                      height: 10,
+                      width: 10,
+                      backgroundColor: 'lightgrey',
+                      borderRadius: 100,
+                      marginRight: 5
+                    }}></View>
+                    : <View style={{
+                      height: 10,
+                      width: 10,
+                      backgroundColor: 'lightgreen',
+                      borderRadius: 100,
+                      marginRight: 5
+                    }}></View>}
+                  <Text style={chat.friendStatus}>
+                    {this.props.route.params.sender.online === 0 ? 'Offline' : 'Active Now'}</Text>
+                </View>
               </View>
             </TouchableOpacity>
             {/* <Text style={chat.menuButton}> <FontAwesomeIcon icon={faEllipsisH} size={20} /> </Text> */}

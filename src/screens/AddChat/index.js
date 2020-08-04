@@ -79,7 +79,7 @@ class AddChat extends Component {
             > <FontAwesomeIcon icon={faArrowLeft} size={20} /> </Text>
             <View style={{flex: 1, marginLeft: 12}}>
               <Text style={chat.title}>Choose Friend</Text>
-              <Text style={chat.small}>999 Friends</Text>
+              <Text style={chat.small}>{this.state.friendsList.length} Friends</Text>
             </View>
             <Text
               style={chat.menuButton}
@@ -117,16 +117,30 @@ class AddChat extends Component {
                         online: friend.online
                       })}
                     >
-                      <Image
-                        style={chat.contactImage}
-                        source={{ uri: friend.image }}
-                        resizeMethod='resize'
-                      />
+                      <View style={global.relative}>
+                        <Image
+                          style={chat.contactImage}
+                          source={{ uri: friend.image }}
+                          resizeMethod='resize'
+                        />
+                        {friend.online === 1 && <View style={{
+                          height: 10,
+                          width: 10,
+                          backgroundColor: 'lightgreen',
+                          borderRadius: 100,
+                          marginRight: 5,
+                          position: 'absolute',
+                          right: -5,
+                          bottom: 0
+                        }}></View>}
+                      </View>
                       <View style={chat.contactInfo}>
                         <Text style={chat.contactName}>{friend.full_name}</Text>
                         <Text style={chat.contactText}>My status is here!</Text>
                       </View>
-                      <Text style={chat.contactStatus}>Active</Text>
+                      {friend.online === 0 
+                          ? <Text style={[chat.contactStatus, { color: 'grey' }]}>Offline</Text>
+                          : <Text style={chat.contactStatus}>Active</Text>}
 
                     </TouchableOpacity>
                   )
