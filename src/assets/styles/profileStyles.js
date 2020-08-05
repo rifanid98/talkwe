@@ -76,6 +76,7 @@ const profileStyles = StyleSheet.create({
   // form
   form: {
     position: 'absolute',
+    backgroundColor: color.primary,
     bottom: 0,
     right: 0,
     left: 0,
