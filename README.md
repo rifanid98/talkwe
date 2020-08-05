@@ -42,6 +42,11 @@ There is a menu to go to the profile screen, notifications screen, friend reques
 - Messages List.
 - Realtime Notifications (new friends request, accepted friend request & new messages).
 
+#### Chat Screen
+
+- Realtime chat.
+- Realtime read message notification.
+
 #### Profile Screen
 
 - User Profile.
