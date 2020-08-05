@@ -57,7 +57,14 @@ By default, maps screen will showing user location. There are two menus :
 
 ## Screenshots
 
-<image src="https://github.com/rifanid98/talkwe/blob/master/screenshots/home.jpg" width="200">
+<image src="https://github.com/rifanid98/talkwe/blob/master/screenshots/login.jpg" width="250">
+<image src="https://github.com/rifanid98/talkwe/blob/master/screenshots/register.jpg" width="250">
+<image src="https://github.com/rifanid98/talkwe/blob/master/screenshots/home.jpg" width="250">
+<image src="https://github.com/rifanid98/talkwe/blob/master/screenshots/chat.jpg" width="250">
+<image src="https://github.com/rifanid98/talkwe/blob/master/screenshots/profile.jpg" width="250">
+<image src="https://github.com/rifanid98/talkwe/blob/master/screenshots/friends-request.jpg" width="250">
+<image src="https://github.com/rifanid98/talkwe/blob/master/screenshots/maps-friends-list.jpg" width="250">
+<image src="https://github.com/rifanid98/talkwe/blob/master/screenshots/maps-users-list.jpg" width="250">
 
 ## Usage
 
