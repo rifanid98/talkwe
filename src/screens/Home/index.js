@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, View, Image, TouchableOpacity, TouchableOpacityBase, Alert, Platform, PermissionsAndroid } from 'react-native';
+import { Text, View, Image, TouchableOpacity, Alert, Platform, PermissionsAndroid, AppState } from 'react-native';
 import NetInfo from "@react-native-community/netinfo";
 import { globalStyles as global, homeStyles as home, colorScheme as color} from 'assets';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
@@ -18,9 +18,9 @@ import {
 } from 'modules';
 import io from 'socket.io-client';
 import { appConfig } from 'configs';
-import { convertDate, getPassedTime, createFormData, createUrlParamFromObj } from 'utils';
+import { convertDate, createFormData } from 'utils';
 import Geolocation from 'react-native-geolocation-service';
-import { BadgeNotification } from 'components';
+import { BadgeNotification, BadgeOnlineStatus } from 'components';
 
 class Home extends Component {
   constructor(props) {
@@ -42,7 +42,6 @@ class Home extends Component {
    * Life Cycles
    */
   async componentDidMount() {
-    await this.requestPermissions()
     this.getMessagesList()
     this.getFriendsList()
     this.getMessageStatus()
@@ -50,15 +49,22 @@ class Home extends Component {
     this.getNewNotification()
     this._socketio()
     this._subscribe()
+    await this.requestPermissions()
     this.setLocation()
+    AppState.addEventListener(
+      'change',
+      this._handleAppStateChange
+    );
   }
   componentWillUnmount() {
     if (this.socket) {
       this.socket.disconnect()
       this.socket.removeAllListeners()
     }
-  }
-  componentDidUpdate() {
+    AppState.removeEventListener(
+      'change',
+      this._handleAppStateChange
+    );
   }
 
   /**
@@ -80,6 +86,13 @@ class Home extends Component {
         this.getFriendsRequest()
         this.getFriendsList()
       }
+    });
+    this.socket.on('refresh', () => {
+      this.getMessagesList()
+      this.getFriendsList()
+      this.getMessageStatus()
+      this.getFriendsRequest()
+      this.getNewNotification()
     });
   }
 
@@ -183,7 +196,7 @@ class Home extends Component {
     const formData = createFormData(data)
     this.props.patchUser(token, formData, user_id)
       .then((res) => {
-        console.log('Location updated');
+        this.socket.emit('refresh', {});
       })
       .catch((error) => {
         console.log(error);
@@ -237,17 +250,19 @@ class Home extends Component {
     setInterval(() => {
       Geolocation.getCurrentPosition(
         (position) => {
-          this.setState({
-            ...this.state,
-            location: {
-              ...this.state.location,
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude
-            }
-          }, () => {
-            this.props.setLocation(this.state.location)
-            this.updateUser({ location: `${this.state.location.latitude},${this.state.location.longitude}` })
-          })
+          if (this.state.location.latitude !== position.coords.latitude && this.state.location.longitude !== position.coords.longitude) {
+            this.setState({
+              ...this.state,
+              location: {
+                ...this.state.location,
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude
+              }
+            }, () => {
+              this.props.setLocation(this.state.location)
+              this.updateUser({ location: `${this.state.location.latitude},${this.state.location.longitude}` })
+            })
+          }
         },
         (error) => {
           // See error code charts below.
@@ -338,6 +353,14 @@ class Home extends Component {
       friendsRequest: data.data
     })
   }
+  _handleAppStateChange = (nextAppState) => {
+    if (nextAppState === 'background') {
+      this.updateOnlineStatus(0)
+    } else {
+      this.updateOnlineStatus(1)
+    }
+  };
+
 
   /**
    * DOM Render
@@ -436,15 +459,16 @@ class Home extends Component {
                           source={{ uri: friend.image }}
                         />
                         <Text style={home.friendsListItemName}>{friend.full_name.split(' ')[0]}</Text>
-                        <View style={{
-                          height: 15,
-                          width: 15,
-                          backgroundColor: 'lightgreen',
-                          borderRadius: 100,
-                          position: 'absolute', 
-                          bottom: 30,
-                          right: 0
-                        }}></View>
+                        <BadgeOnlineStatus
+                          height={15}
+                          width={15}
+                          color="lightgreen"
+                          style={{
+                            position: 'absolute',
+                            bottom: 30,
+                            right: 0
+                          }}
+                          />
                       </View>
                     )
                     } else {
