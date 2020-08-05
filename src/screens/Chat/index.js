@@ -8,11 +8,13 @@ import { getConversationsMessage, addMessage, setMessageStatus } from 'modules';
 import { createFormData, convertDate } from 'utils';
 import io from 'socket.io-client';
 import { appConfig } from 'configs';
+import { BadgeOnlineStatus } from 'components';
 
 class Chat extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      isMount: false,
       messages: [],
       message: '',
       unreadMessages: [],
@@ -43,11 +45,37 @@ class Chat extends Component {
     this.socket.on('privateMessage', (data) => {
       this.setNewMessage(data)
     });
+    this.socket.on('readMessage', (data) => {
+      this.setReadMessage(data)
+    });
   }
 
   /**
    * API Services
    */
+  getUserInfo = () => {
+    const token = this.props.auth.data.tokenLogin;
+    const friendID = this.props.route.params.sender.id;
+    this.props.getDetailUser(token, friendID)
+      .then(res => {
+        this.setState({
+          ...this.state,
+          isMount: true
+        })
+      })
+      .catch(error => {
+        console.log(error)
+        let errorMessage = 'Please try again';
+        if (error.response !== undefined) {
+          if (error.response.data) {
+            if (error.response.data.message) {
+              errorMessage = error.response.data.message;
+            }
+          }
+        }
+        // Alert.alert('Update Profile Failed', errorMessage)
+      });
+  }
   getMessage = () => {
     const token = this.props.auth.data.tokenLogin;
     const senderID = this.props.route.params.sender.id
@@ -95,7 +123,7 @@ class Chat extends Component {
     token
       ? this.props.addMessage(token, formData)
         .then((res) => {
-          // this.getMessage()
+          
         }).catch((error) => {
           this.handleOnChange(message, 'message')
           Alert.alert('Send message failed', 'Please try again later.')
@@ -104,17 +132,20 @@ class Chat extends Component {
   }
   setMessageStatus = () => {
     const token = this.props.auth.data.tokenLogin;
+    // friend
     const senderID = this.props.route.params.sender.id; 
+    // user login
     const receiverID = this.props.auth.data.id;
     token
       ? this.props.setMessageStatus(token, senderID, receiverID)
         .then((res) => {
-          // console.log(res)
+
         }).catch((error) => {
           console.log(`set message status failed`)
         })
       : console.log(`cannot find token`)
   }
+  
 
   /**
    * Logic
@@ -126,15 +157,44 @@ class Chat extends Component {
     })
   }
   setNewMessage = (data) => {
-    let messages = this.state.messages;
-    messages.reverse()
-    messages.push(data.message)
-    this.setState({
-      ...this.state,
-      'messages': messages.reverse()
-    }, () => {
+    const senderID = this.props.auth.data.id;
+    const receiverID = this.props.route.params.sender.id;
+    if (data.receiver_id === senderID && data.sender_id === receiverID) {
+      let messages = this.state.messages;
+      messages.reverse()
+      messages.push(data.message)
+      this.setState({
+        ...this.state,
+        'messages': messages.reverse()
+      }, () => {
         this.setMessageStatus()
-    })
+      })
+    }
+    if (data.receiver_id === receiverID && data.sender_id === senderID) {
+      let messages = this.state.messages;
+      messages.reverse()
+      messages.push(data.message)
+      this.setState({
+        ...this.state,
+        'messages': messages.reverse()
+      })
+    }
+  }
+  setReadMessage = (data) => {
+    const me = this.props.auth.data.id;
+    const myFriend = this.props.route.params.sender.id;
+    if (parseInt(data.sender_id) === parseInt(me) && parseInt(data.receiver_id) === parseInt(myFriend)) {
+      let messages = this.state.messages;
+      messages.map((message, index) => {
+        if (message.message_read === 0) {
+          message.message_read = 1;
+        }
+      })
+      this.setState({
+        ...this.state,
+        messages: messages
+      })
+    }
   }
 
   /**
@@ -208,23 +268,27 @@ class Chat extends Component {
                   justifyContent: 'flex-start',
                   alignItems: 'center'
                 }}>
-                  {this.props.route.params.sender.online === 0
-                    ? <View style={{
+                  {this.props.users.data
+                    ? this.props.users.data.length > 0 
+                      ? this.props.users.data[0].online === 1
+                        ? <BadgeOnlineStatus height={10} width={10} color="lightgreen"/>
+                        : <BadgeOnlineStatus height={10} width={10} color="lightgrey" />
+                      : <BadgeOnlineStatus height={10} width={10} color="lightgrey" />
+                    : <View style={{
                       height: 10,
                       width: 10,
                       backgroundColor: 'lightgrey',
                       borderRadius: 100,
                       marginRight: 5
-                    }}></View>
-                    : <View style={{
-                      height: 10,
-                      width: 10,
-                      backgroundColor: 'lightgreen',
-                      borderRadius: 100,
-                      marginRight: 5
                     }}></View>}
                   <Text style={chat.friendStatus}>
-                    {this.props.route.params.sender.online === 0 ? 'Offline' : 'Active Now'}</Text>
+                    {this.props.users.data
+                      ? this.props.users.data.length > 0
+                        ? this.props.users.data[0].online === 1
+                          ? 'Active'
+                          : 'Offline'
+                        : 'Offline'
+                      : 'Offline'}</Text>
                 </View>
               </View>
             </TouchableOpacity>
@@ -265,6 +329,7 @@ class Chat extends Component {
 const mapStateToProps = (state) => ({
   auth: state.auth,
   messages: state.messages,
+  users: state.users,
 })
 
 const mapDispatchToProps = {
