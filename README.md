@@ -58,18 +58,18 @@ By default, maps screen will showing user location. There are two menus :
 ## Screenshots
 
 <div align="center">
-    <img width="250" src="./screenshots/login.jpg">   
-    <img width="250" src="./screenshots/register.jpg">
-    <img width="250" src="./screenshots/home.jpg">
+    <img width="250" src="https://github.com/rifanid98/talkwe/blob/master/screenshots/login.png">   
+    <img width="250" src="https://github.com/rifanid98/talkwe/blob/master/screenshots/register.png">
+    <img width="250" src="https://github.com/rifanid98/talkwe/blob/master/screenshots/home.png">
 </div>
 <div align="center">
-    <img width="250" src="./screenshots/chat.jpg">   
-    <img width="250" src="./screenshots/profile.jpg">
-    <img width="250" src="./screenshots/friends-request.jpg">
+    <img width="250" src="https://github.com/rifanid98/talkwe/blob/master/screenshots/chat.png">   
+    <img width="250" src="https://github.com/rifanid98/talkwe/blob/master/screenshots/profile.png">
+    <img width="250" src="https://github.com/rifanid98/talkwe/blob/master/screenshots/friends-request.png">
 </div>
 <div align="center">
-    <img width="250" src="./screenshots/maps-friends-list.jpg">   
-    <img width="250" src="./screenshots/maps-users-list.jpg">   
+    <img width="250" src="https://github.com/rifanid98/talkwe/blob/master/screenshots/maps-friends-list.png">   
+    <img width="250" src="https://github.com/rifanid98/talkwe/blob/master/screenshots/maps-users-list.png">   
 </div>
 
 ## Usage
