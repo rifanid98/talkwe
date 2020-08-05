@@ -40,6 +40,7 @@ There is a menu to go to the profile screen, notifications screen, friend reques
 
 - Friends List.
 - Messages List.
+- Realtime Notifications (new friends request, accepted friend request & new messages).
 
 #### Profile Screen
 
