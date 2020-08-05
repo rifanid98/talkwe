@@ -57,7 +57,7 @@ By default, maps screen will showing user location. There are two menus :
 
 ## Screenshots
 
-<image src="https://github.com/rifanid98/talkwe/blob/master/screenshots/home.jpg" width="100">
+<image src="https://github.com/rifanid98/talkwe/blob/master/screenshots/home.jpg" width="200">
 
 ## Usage
 
