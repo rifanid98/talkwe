@@ -2,6 +2,8 @@
 
 <p align="center">
   <image src="https://github.com/rifanid98/talkwe/blob/master/src/assets/images/logo.png" alt="talkwe logo">
+</p>
+<p align="center">
   Built with React Native, Build with love.
 </p>
 
