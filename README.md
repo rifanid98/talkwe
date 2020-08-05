@@ -57,14 +57,20 @@ By default, maps screen will showing user location. There are two menus :
 
 ## Screenshots
 
-<img src="https://github.com/rifanid98/talkwe/blob/master/screenshots/login.jpg" width="250">
-<img src="https://github.com/rifanid98/talkwe/blob/master/screenshots/register.jpg" width="250">
-<img src="https://github.com/rifanid98/talkwe/blob/master/screenshots/home.jpg" width="250">
-<img src="https://github.com/rifanid98/talkwe/blob/master/screenshots/chat.jpg" width="250">
-<img src="https://github.com/rifanid98/talkwe/blob/master/screenshots/profile.jpg" width="250">
-<img src="https://github.com/rifanid98/talkwe/blob/master/screenshots/friends-request.jpg" width="250">
-<img src="https://github.com/rifanid98/talkwe/blob/master/screenshots/maps-friends-list.jpg" width="250">
-<img src="https://github.com/rifanid98/talkwe/blob/master/screenshots/maps-users-list.jpg" width="250">
+<div align="center">
+    <img width="250" src="./screenshoots/login.jpg">   
+    <img width="250" src="./screenshoots/register.jpg">
+    <img width="250" src="./screenshoots/home.jpg">
+</div>
+<div align="center">
+    <img width="250" src="./screenshoots/chat.jpg">   
+    <img width="250" src="./screenshoots/profile.jpg">
+    <img width="250" src="./screenshoots/friends-request.jpg">
+</div>
+<div align="center">
+    <img width="250" src="./screenshoots/maps-friends-list.jpg">   
+    <img width="250" src="./screenshoots/maps-users-list.jpg">   
+</div>
 
 ## Usage
 
