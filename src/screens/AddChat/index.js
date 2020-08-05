@@ -6,7 +6,7 @@ import { faArrowLeft, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ScrollView } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
 import { getFriendsList } from 'modules';
-
+import { BadgeOnlineStatus } from 'components';
 
 class AddChat extends Component {
   constructor(props) {
@@ -123,16 +123,18 @@ class AddChat extends Component {
                           source={{ uri: friend.image }}
                           resizeMethod='resize'
                         />
-                        {friend.online === 1 && <View style={{
-                          height: 10,
-                          width: 10,
-                          backgroundColor: 'lightgreen',
-                          borderRadius: 100,
-                          marginRight: 5,
-                          position: 'absolute',
-                          right: -5,
-                          bottom: 0
-                        }}></View>}
+                        {friend.online === 1
+                          && <BadgeOnlineStatus
+                          height={10}
+                          width={10}
+                          color="lightgreen" 
+                          style={{
+                            marginRight: 5,
+                            position: 'absolute',
+                            right: -5,
+                            bottom: 0
+                          }}
+                          />}
                       </View>
                       <View style={chat.contactInfo}>
                         <Text style={chat.contactName}>{friend.full_name}</Text>
