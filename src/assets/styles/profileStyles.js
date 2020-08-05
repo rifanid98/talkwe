@@ -4,6 +4,7 @@ import { colorScheme as color, font } from '.';
 const profileStyles = StyleSheet.create({
   container: {
     flex: 1,
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: 24,

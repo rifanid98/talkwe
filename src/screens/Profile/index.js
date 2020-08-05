@@ -187,7 +187,10 @@ class Profile extends Component {
           <View style={profile.header}>
             <Text style={profile.menuButton} onPress={() => this.props.navigation.goBack()}> <FontAwesomeIcon icon={faArrowLeft} size={20} /> </Text>
           </View>
-          <ScrollView showsVerticalScrollIndicator={false}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={{width: '100%'}}
+            >
             {/* profile */}
             <View
               style={profile.profile}
@@ -256,6 +259,21 @@ class Profile extends Component {
                   <Text style={profile.itemInfo}>Edit your profile</Text>
                 </View>
               </TouchableOpacity>
+              {/* location setting */}
+              <TouchableOpacity
+                style={profile.item}
+                onPress={() => this.setState({ ...this.state, edit: !this.state.edit })}
+              >
+                <Text style={profile.itemIcon}>
+                  <FontAwesomeIcon icon={faUserCircle} size={20} />
+                </Text>
+                <View style={profile.itemContent}>
+                  <Text style={profile.itemName}>Location Off</Text>
+                  <Text style={profile.itemInfo}>Turn off location share</Text>
+                  <Text style={profile.itemInfo}>Turn on location share</Text>
+                </View>
+              </TouchableOpacity>
+
               {/* Logout */}
               <TouchableOpacity
                 style={profile.item}
@@ -274,45 +292,44 @@ class Profile extends Component {
                 </View>
               </TouchableOpacity>
             </View>
-
-            {this.state.edit && <View style={profile.form}>
-              <TextInput
-                style={profile.input}
-                onChangeText={text => this.handleOnChange(text, 'username')}
-                placeholder="Username"
-                onChangeText={(text) => this.handleOnChange(text, { form: 'username' })}
-                defaultValue={this.props.auth.data.username}
-              />
-              <TextInput
-                style={profile.input}
-                onChangeText={text => this.handleOnChange(text, 'full_name')}
-                placeholder="Full Name"
-                onChangeText={(text) => this.handleOnChange(text, { form: 'full_name' })}
-                defaultValue={this.props.auth.data.full_name}
-              />
-              <TextInput
-                style={profile.input}
-                onChangeText={text => this.handleOnChange(text, 'email')}
-                placeholder="Email"
-                onChangeText={(text) => this.handleOnChange(text, { form: 'email' })}
-                defaultValue={this.props.auth.data.email}
-              />
-              <TextInput
-                style={profile.input}
-                onChangeText={text => this.handleOnChange(text, 'password')}
-                secureTextEntry={true}
-                placeholder="Password"
-                onChangeText={(text) => this.handleOnChange(text, { form: 'password' })}
-              />
-              {/* <LoadingButton /> */}
-              <Text
-                style={profile.button}
-                onPress={() => this.updateUser()}
-              >
-                Save
-            </Text>
-            </View>}
           </ScrollView>
+          {this.state.edit && <View style={profile.form}>
+            <TextInput
+              style={profile.input}
+              onChangeText={text => this.handleOnChange(text, 'username')}
+              placeholder="Username"
+              onChangeText={(text) => this.handleOnChange(text, { form: 'username' })}
+              defaultValue={this.props.auth.data.username}
+            />
+            <TextInput
+              style={profile.input}
+              onChangeText={text => this.handleOnChange(text, 'full_name')}
+              placeholder="Full Name"
+              onChangeText={(text) => this.handleOnChange(text, { form: 'full_name' })}
+              defaultValue={this.props.auth.data.full_name}
+            />
+            <TextInput
+              style={profile.input}
+              onChangeText={text => this.handleOnChange(text, 'email')}
+              placeholder="Email"
+              onChangeText={(text) => this.handleOnChange(text, { form: 'email' })}
+              defaultValue={this.props.auth.data.email}
+            />
+            <TextInput
+              style={profile.input}
+              onChangeText={text => this.handleOnChange(text, 'password')}
+              secureTextEntry={true}
+              placeholder="Password"
+              onChangeText={(text) => this.handleOnChange(text, { form: 'password' })}
+            />
+            {/* <LoadingButton /> */}
+            <Text
+              style={profile.button}
+              onPress={() => this.updateUser()}
+            >
+              Save
+            </Text>
+          </View>}
           </View>  
       </>
     )
