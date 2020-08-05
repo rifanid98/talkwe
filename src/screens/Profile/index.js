@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
-import { Text, View, Image, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { Text, View, Image, TouchableOpacity, TextInput, Alert, ScrollView } from 'react-native';
 import NetInfo from "@react-native-community/netinfo";
 import { globalStyles as global, profileStyles as profile } from 'assets';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faArrowLeft, faMapMarkerAlt, faUserCircle, faSignOutAlt, faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import { connect } from 'react-redux';
 import { logout, patchUser, getAddress } from 'modules';
-import { LoadingButton, FlashMessage, LoadingIcon } from 'components';
+import { LoadingButton, FlashMessage, LoadingIcon, BadgeOnlineStatus } from 'components';
 import { profileSchema, createFormData, createImageFormData } from 'utils';
 import ImagePicker from 'react-native-image-picker'
 
@@ -187,143 +187,133 @@ class Profile extends Component {
           <View style={profile.header}>
             <Text style={profile.menuButton} onPress={() => this.props.navigation.goBack()}> <FontAwesomeIcon icon={faArrowLeft} size={20} /> </Text>
           </View>
-          {/* profile */}
-          <View
-            style={profile.profile}
-          >
-            {
-              this.props.users.isLoading
-                ? <View style={[profile.image, {
-                  backgroundColor: 'gray',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center'
-                }]}>
-                  <LoadingIcon style={{height: 50, width: 50}}/>
-                </View>
-                : this.state.image
-                  ? <TouchableOpacity
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {/* profile */}
+            <View
+              style={profile.profile}
+            >
+              {
+                this.props.users.isLoading
+                  ? <View style={[profile.image, {
+                    backgroundColor: 'gray',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                  }]}>
+                    <LoadingIcon style={{ height: 50, width: 50 }} />
+                  </View>
+                  : this.state.image
+                    ? <TouchableOpacity
                       onPress={() => this.handleChoosePhoto()}
                     >
                       <Image source={{ uri: this.state.image.uri }} style={profile.image} resizeMethod="resize" />
                     </TouchableOpacity>
-                  : <TouchableOpacity
+                    : <TouchableOpacity
                       onPress={() => this.handleChoosePhoto()}
                     >
                       <Image style={profile.image} source={{ uri: this.props.auth.data.image }} resizeMethod="resize" />
                     </TouchableOpacity>
-            }
-            <View style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}>
-              {this.state.onlineStatus
-                ? <View style={{
-                  height: 12,
-                  width: 12,
-                  backgroundColor: 'lightgreen',
-                  borderRadius: 100,
-                  marginRight: 10,
-                }}></View>
-                : <View style={{
-                  height: 12,
-                  width: 12,
-                  backgroundColor: 'lightgrey',
-                  borderRadius: 100,
-                  marginRight: 10,
-                }}></View>}
-              <Text style={profile.name}>{this.props.auth.data.full_name}</Text>
-            </View>
-            <Text style={profile.email}>
-              <FontAwesomeIcon icon={faEnvelope} />
-              {this.props.auth.data.email}
-            </Text>
-            <Text style={profile.location}>
-              <FontAwesomeIcon icon={faMapMarkerAlt} />
-              {
-                this.props.location.isLoading
-                  ? <Text>Loading...</Text> 
-                  : this.props.location.data
-                    ? this.props.location.data.display_name
-                    : <Text
-                      onPress={() => this.getAddress()}
-                    >Cannot get location. Touch to refresh.</Text>
               }
-            </Text>
-          </View>
-          {/* setting */}
-          <View style={profile.lists}>
-            {/* profile setting */}
-            <TouchableOpacity
-              style={profile.item}
-              onPress={() => this.setState({...this.state, edit: !this.state.edit}) }
-            >
-              <Text style={profile.itemIcon}>
-                <FontAwesomeIcon icon={faUserCircle} size={20} />
-              </Text>
-              <View style={profile.itemContent}>
-                <Text style={profile.itemName}>Profile</Text>
-                <Text style={profile.itemInfo}>Edit your profile</Text>
+              <View style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}>
+                {this.state.onlineStatus
+                  ? <BadgeOnlineStatus height={12} width={12} color="lightgreen" style={{ marginRight: 10 }} />
+                  : <BadgeOnlineStatus height={12} width={12} color="lightgrey" style={{ marginRight: 10 }} />}
+                <Text style={profile.name}>{this.props.auth.data.full_name}</Text>
               </View>
-            </TouchableOpacity>
-            {/* Logout */}
-            <TouchableOpacity
-              style={profile.item}
-              onPress={() => this.logout()}
-            >
-              <Text style={profile.itemIcon}>
+              <Text style={profile.email}>
+                <FontAwesomeIcon icon={faEnvelope} />
+                {this.props.auth.data.email}
+              </Text>
+              <Text style={profile.location}>
+                <FontAwesomeIcon icon={faMapMarkerAlt} />
                 {
-                  this.props.auth.isLoading
-                    ? <LoadingIcon />
-                    : <FontAwesomeIcon icon={faSignOutAlt} size={20} />
+                  this.props.location.isLoading
+                    ? <Text>Loading...</Text>
+                    : this.props.location.data
+                      ? this.props.location.data.display_name
+                      : <Text
+                        onPress={() => this.getAddress()}
+                      >Cannot get location. Touch to refresh.</Text>
                 }
               </Text>
-              <View style={profile.itemContent}>
-                <Text style={profile.itemName}>Logout</Text>
-                <Text style={profile.itemInfo}>End your session</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
+            </View>
+            {/* setting */}
+            <View style={profile.lists}>
+              {/* profile setting */}
+              <TouchableOpacity
+                style={profile.item}
+                onPress={() => this.setState({ ...this.state, edit: !this.state.edit })}
+              >
+                <Text style={profile.itemIcon}>
+                  <FontAwesomeIcon icon={faUserCircle} size={20} />
+                </Text>
+                <View style={profile.itemContent}>
+                  <Text style={profile.itemName}>Profile</Text>
+                  <Text style={profile.itemInfo}>Edit your profile</Text>
+                </View>
+              </TouchableOpacity>
+              {/* Logout */}
+              <TouchableOpacity
+                style={profile.item}
+                onPress={() => this.logout()}
+              >
+                <Text style={profile.itemIcon}>
+                  {
+                    this.props.auth.isLoading
+                      ? <LoadingIcon />
+                      : <FontAwesomeIcon icon={faSignOutAlt} size={20} />
+                  }
+                </Text>
+                <View style={profile.itemContent}>
+                  <Text style={profile.itemName}>Logout</Text>
+                  <Text style={profile.itemInfo}>End your session</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
 
-          {this.state.edit && <View style={profile.form}>
-            <TextInput
-              style={profile.input}
-              onChangeText={text => this.handleOnChange(text, 'username')}
-              placeholder="Username"
-              onChangeText={(text) => this.handleOnChange(text, {form: 'username'})}
-              defaultValue={this.props.auth.data.username}
-            />
-            <TextInput
-              style={profile.input}
-              onChangeText={text => this.handleOnChange(text, 'full_name')}
-              placeholder="Full Name"
-              onChangeText={(text) => this.handleOnChange(text, {form: 'full_name'})}
-              defaultValue={this.props.auth.data.full_name}
-            />
-            <TextInput
-              style={profile.input}
-              onChangeText={text => this.handleOnChange(text, 'email')}
-              placeholder="Email"
-              onChangeText={(text) => this.handleOnChange(text, {form: 'email'})}
-              defaultValue={this.props.auth.data.email}
-            />
-            <TextInput
-              style={profile.input}
-              onChangeText={text => this.handleOnChange(text, 'password')}
-              secureTextEntry={true}
-              placeholder="Password"
-              onChangeText={(text) => this.handleOnChange(text, {form: 'password'})}
-            />
-            {/* <LoadingButton /> */}
-            <Text
-              style={profile.button}
-              onPress={() => this.updateUser()}
-            >
-              Save
+            {this.state.edit && <View style={profile.form}>
+              <TextInput
+                style={profile.input}
+                onChangeText={text => this.handleOnChange(text, 'username')}
+                placeholder="Username"
+                onChangeText={(text) => this.handleOnChange(text, { form: 'username' })}
+                defaultValue={this.props.auth.data.username}
+              />
+              <TextInput
+                style={profile.input}
+                onChangeText={text => this.handleOnChange(text, 'full_name')}
+                placeholder="Full Name"
+                onChangeText={(text) => this.handleOnChange(text, { form: 'full_name' })}
+                defaultValue={this.props.auth.data.full_name}
+              />
+              <TextInput
+                style={profile.input}
+                onChangeText={text => this.handleOnChange(text, 'email')}
+                placeholder="Email"
+                onChangeText={(text) => this.handleOnChange(text, { form: 'email' })}
+                defaultValue={this.props.auth.data.email}
+              />
+              <TextInput
+                style={profile.input}
+                onChangeText={text => this.handleOnChange(text, 'password')}
+                secureTextEntry={true}
+                placeholder="Password"
+                onChangeText={(text) => this.handleOnChange(text, { form: 'password' })}
+              />
+              {/* <LoadingButton /> */}
+              <Text
+                style={profile.button}
+                onPress={() => this.updateUser()}
+              >
+                Save
             </Text>
-          </View>}
-         </View>  
+            </View>}
+          </ScrollView>
+          </View>  
       </>
     )
   }
