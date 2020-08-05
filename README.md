@@ -58,18 +58,18 @@ By default, maps screen will showing user location. There are two menus :
 ## Screenshots
 
 <div align="center">
-    <img width="250" src="./screenshoots/login.jpg">   
-    <img width="250" src="./screenshoots/register.jpg">
-    <img width="250" src="./screenshoots/home.jpg">
+    <img width="250" src="./screenshots/login.jpg">   
+    <img width="250" src="./screenshots/register.jpg">
+    <img width="250" src="./screenshots/home.jpg">
 </div>
 <div align="center">
-    <img width="250" src="./screenshoots/chat.jpg">   
-    <img width="250" src="./screenshoots/profile.jpg">
-    <img width="250" src="./screenshoots/friends-request.jpg">
+    <img width="250" src="./screenshots/chat.jpg">   
+    <img width="250" src="./screenshots/profile.jpg">
+    <img width="250" src="./screenshots/friends-request.jpg">
 </div>
 <div align="center">
-    <img width="250" src="./screenshoots/maps-friends-list.jpg">   
-    <img width="250" src="./screenshoots/maps-users-list.jpg">   
+    <img width="250" src="./screenshots/maps-friends-list.jpg">   
+    <img width="250" src="./screenshots/maps-users-list.jpg">   
 </div>
 
 ## Usage
