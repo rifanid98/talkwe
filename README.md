@@ -1,58 +1,90 @@
-# Project name
+# <center>TalkWe</center>
 
-<!--- These are examples. See https://shields.io for others or to customize this set of shields. You might want to include dependencies, project status and licence info here --->
+[LOGO]
 
-![GitHub repo size](https://img.shields.io/github/repo-size/scottydocs/README-template.md)
-![GitHub contributors](https://img.shields.io/github/contributors/scottydocs/README-template.md)
-![GitHub stars](https://img.shields.io/github/stars/scottydocs/README-template.md?style=social)
-![GitHub forks](https://img.shields.io/github/forks/scottydocs/README-template.md?style=social)
-![Twitter Follow](https://img.shields.io/twitter/follow/scottydocs?style=social)
+## :memo: Table Of Content
 
-Project name is a `<utility/tool/feature>` that allows `<insert_target_audience>` to do `<action/task_it_does>`.
+- [Introduction](https://github.com/rifanid98/talkwe#introduction)
+- [Features](https://github.com/rifanid98/talkwe#features)
+- [Screenshots](https://github.com/rifanid98/talkwe#screenshots)
+- [Usage](https://github.com/rifanid98/talkwe#usage)
+  - [Prerequisites](https://github.com/rifanid98/talkwe#prerequisites)
+  - [Installing](https://github.com/rifanid98/talkwe#installing-to-your-local-machine)
+- [Contributing](https://github.com/rifanid98/talkwe#contributing-to-this-project)
+- [Contributors](https://github.com/rifanid98/talkwe#contributors)
+- [Related Project](https://github.com/rifanid98/talkwe#related)
+- [Contact](https://github.com/rifanid98/talkwe#contact)
+- [License](https://github.com/rifanid98/talkwe#license)
 
-Additional line of information text about what the project does. Your introduction should be around 2 or 3 sentences. Don't go overboard, people won't read it.
+## Introduction
 
-## Prerequisites
+TalkWe is a mobile chat application created using MERN Stack (MySQL, Express.Js, React Native & Node.Js). Useful to make it easier for users to communicate with friends.
+
+## Features
+
+#### Authentication
+
+User can login or register if he does not have an account before. There is also standard authentication validation when logging in and registering.
+
+- Login.
+- Register.
+
+#### Home Screen
+
+There is a menu to go to the profile screen, notifications screen, friend requests screen and maps screen at the top right.
+
+- Friends List.
+- Messages List.
+
+#### Profile Screen
+
+- User Profile.
+- Friend Profile.
+
+#### Maps Screen
+
+By default, maps screen will showing user location. There are two menus :
+
+- Nearby Friends List.
+  Users can see list of friends they have, and can find out the last location of each friend.
+- Nearby Users List.
+  Users can see a list of the closest users available, and can find out the last location of each of them (if they enable the location sharing feature).
+
+## Screenshots
+
+[screenshots]
+
+## Usage
+
+- For common users, you can download the release apk at [google drive]()
+- For developer, you can continue to follow the instructions bellow.
+
+### Prerequisites
 
 Before you begin, ensure you have met the following requirements:
 
-<!--- These are just example requirements. Add, duplicate or remove as required --->
+- `Node.Js`
+- `MySQL Server`
+- `Git`
 
-- You have installed the latest version of `<coding_language/dependency/requirement_1>`
-- You have a `<Windows/Linux/Mac>` machine. State which OS is supported/which is not.
-- You have read `<guide/link/documentation_related_to_project>`.
+### Installing to your local machine
 
-## Installing <project_name>
+- Go to your desktop directory or your dedicated projects folder.
+- Open your favourite terminal or command prompt (use git bash if you use windows os).
+- Follow these command :
+  `git clone https://github.com/rifanid98/talkwe`
+  `cd talkwe`
+  `npm install`
+- Open `.env` environtment file, and change following config :
+  - `ACTIVE_CONFIG=prod` to `ACTIVE_CONFIG=dev`
+  - `API_URL=` to your local ip `API_URL=http://192.168 42.75:3000` (use port 3000). Type ifconfig on the terminal to see your local ip.
+  - `GOOGLE_API_KEY=` to your google api key. Search on google how to get google api key.
+  - `LOCATION_IQ_PRIVATE_KEY=` to your LocationIQ private key. You can get the key by register at [locationiq.com](locationiq.com)
+- You are ready to start.
 
-To install <project_name>, follow these steps:
+## Contributing to this project (TalkWe)
 
-Linux and macOS:
-
-```
-<install_command>
-```
-
-Windows:
-
-```
-<install_command>
-```
-
-## Using <project_name>
-
-To use <project_name>, follow these steps:
-
-```
-<usage_example>
-```
-
-Add run commands and examples you think users will find useful. Provide an options reference for bonus points!
-
-## Contributing to <project_name>
-
-<!--- If your README is long or you have some specific process or steps you want contributors to follow, consider creating a separate CONTRIBUTING.md file--->
-
-To contribute to <project_name>, follow these steps:
+To contribute to the project, follow these steps:
 
 1. Fork this repository.
 2. Create a branch: `git checkout -b <branch_name>`.
@@ -62,22 +94,22 @@ To contribute to <project_name>, follow these steps:
 
 Alternatively see the GitHub documentation on [creating a pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request).
 
+Contact me immediately if you haven't received a response from me within 1 week to my email [adninsijawa.office@gmail.com]()
+
 ## Contributors
 
 Thanks to the following people who have contributed to this project:
 
-- [@scottydocs](https://github.com/scottydocs) 📖
-- [@cainwatson](https://github.com/cainwatson) 🐛
-- [@calchuchesta](https://github.com/calchuchesta) 🐛
+- [@novalyezu](https://github.com/novalyezu)
 
-You might want to consider using something like the [All Contributors](https://github.com/all-contributors/all-contributors) specification and its [emoji key](https://allcontributors.org/docs/en/emoji-key).
+## Related Project
+
+- [talkweapi](https://github.com/rifanid98/talkweapi) backend api for this project.
 
 ## Contact
 
-If you want to contact me you can reach me at <your_email@address.com>.
+If you want to contact me you can reach me at <adninsijawa.office@gmail.com>.
 
 ## License
 
-<!--- If you're not sure which open license to use see https://choosealicense.com/--->
-
-This project uses the following license: [<license_name>](link).
+This project uses the following license: [MIT](link).
