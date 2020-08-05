@@ -136,4 +136,4 @@ If you want to contact me you can reach me at <adninsijawa.office@gmail.com>.
 
 ## License
 
-This project uses the following license: [MIT](link).
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/rifanid98/talkwe/blob/master/LICENSE) file for details
