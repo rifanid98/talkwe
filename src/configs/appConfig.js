@@ -10,11 +10,11 @@ const constants = {
     },
   },
 
-  production: {
+  prod: {
     url: {
       api: API_URL,
       assets: '../assets',
-      origin: `http://192.168.42.15:3000`,
+      origin: `http://192.168.43.81:3000`,
     },
   },
 };
