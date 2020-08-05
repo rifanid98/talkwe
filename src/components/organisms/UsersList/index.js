@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import { View, TouchableOpacity, Text, ScrollView, Image, Dimensions, Alert } from 'react-native'
-import { globalStyles as global, mapsStyles as maps } from 'assets';
+import { globalStyles as global, mapsStyles as maps, colorScheme as color } from 'assets';
 import { getUsers, getUsersList } from 'modules';
 import { connect } from 'react-redux';
-import { LoadingIcon } from 'components';
+import { LoadingIcon, BadgeOnlineStatus } from 'components';
 import { getDistance } from 'geolib';
 import { addFriend } from 'modules'
 import { createFormData } from 'utils';
@@ -116,7 +116,7 @@ class UsersList extends Component {
    */
   render() {
     return (
-      <View style={maps.panel}>
+      <View style={[maps.panel, global.relative]}>
         <Text style={maps.label}>NEARBY USERS LIST</Text>
         {
           this.props.users.isLoading
@@ -138,26 +138,16 @@ class UsersList extends Component {
                               source={{ uri: user.image }}
                             />
                             {user.online === 0
-                              ? <View style={{
-                                height: 12,
-                                width: 12,
-                                backgroundColor: 'lightgrey',
-                                borderRadius: 100,
-                                marginRight: 5,
+                              ? <BadgeOnlineStatus height={12} width={12} color="lightgrey" style={{
                                 position: 'absolute',
                                 right: -5,
                                 bottom: 5
-                              }}></View>
-                              : <View style={{
-                                height: 12,
-                                width: 12,
-                                backgroundColor: 'lightgreen',
-                                borderRadius: 100,
-                                marginRight: 5,
+                              }}/>
+                              : <BadgeOnlineStatus height={12} width={12} color="lightgreen" style={{
                                 position: 'absolute',
                                 right: -5,
                                 bottom: 5
-                              }}></View>}
+                              }}/>}
                           </View>
                           <View style={maps.itemContent}>
                             <Text style={maps.name}>{user.full_name}</Text>
@@ -191,6 +181,20 @@ class UsersList extends Component {
                 onPress={() => this.getUsersList()}
               >Nearby users not found.  Touch to reload.</Text>
         }
+        {
+          this.props.friends.isLoading && <View style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: color.primary
+          }}>
+            <LoadingIcon type={2} />
+          </View>
+        }
       </View>
     );
   }
@@ -199,6 +203,7 @@ class UsersList extends Component {
 const mapStateToProps = (state) => ({
   auth: state.auth,
   users: state.users,
+  friends: state.friends,
 })
 
 const mapDispatchToProps = {
