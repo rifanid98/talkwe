@@ -1,6 +1,8 @@
 # <center>TalkWe</center>
 
-[LOGO]
+<center>
+<image src="https://github.com/rifanid98/talkwe/blob/master/src/assets/images/logo.png" alt="talkwe logo">
+</center>
 
 ## :memo: Table Of Content
 
