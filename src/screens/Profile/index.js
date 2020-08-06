@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Text, View, Image, TouchableOpacity, TextInput, Alert, ScrollView } from 'react-native';
 import { globalStyles as global, profileStyles as profile } from 'assets';
+import NetInfo from "@react-native-community/netinfo";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faArrowLeft, faMapMarkerAlt, faUserCircle, faSignOutAlt, faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import { connect } from 'react-redux';
@@ -37,6 +38,7 @@ class Profile extends Component {
   componentDidMount() {
     this.getAddress()
     this._socketio()
+    this._subscribe()
   }
 
   /**
@@ -173,12 +175,42 @@ class Profile extends Component {
     }
     
   }
+  updateOnlineStatus = (onlineStatus) => {
+    const token = this.props.auth.data.tokenLogin;
+    const user_id = this.props.auth.data.id;
+    const data = {
+      online: onlineStatus
+    }
+    const formData = createFormData(data)
+    this.props.patchUser(token, formData, user_id)
+      .then((res) => {
+        this.socket.emit('refresh', {});
+      })
+      .catch((error) => {
+        console.log(error);
+        error.response.data.message
+          ? Alert.alert('Failed', error.response.data.message)
+          : Alert.alert('Failed', 'Update Location Failed.')
+      })
+  }
   
   /**
    * Socket.IO Services
    */
   _socketio = () => {
     this.socket = io(appConfig.url.origin);
+  }
+
+  /**
+ * NetInfo API
+ */
+  _subscribe = () => {
+    NetInfo.addEventListener(state => {
+      console.log("Connection type", state.type);
+      state.isConnected
+        ? this.updateOnlineStatus(1)
+        : this.updateOnlineStatus(0)
+    });
   }
 
    /**
@@ -248,6 +280,7 @@ class Profile extends Component {
           : Alert.alert('Failed', 'Update Location Failed.')
       })
   }
+  
   /**
    * DOM Render
    */
