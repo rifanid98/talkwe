@@ -168,7 +168,7 @@ class Profile extends Component {
       const latlang = this.props.auth.data.location;
       this.props.getAddress(latlang)
         .then(res => {
-
+          
         })
         .catch(error => {
           console.log(error)
@@ -336,16 +336,14 @@ class Profile extends Component {
                 <FontAwesomeIcon icon={faEnvelope} />
                 {this.props.auth.data.email}
               </Text>
-              <Text style={profile.location}>
+              <Text style={profile.location} onPress={() => this.getAddress()}>
                 <FontAwesomeIcon icon={faMapMarkerAlt} />
                 {
                   this.props.location.isLoading
                     ? <Text>Loading...</Text>
                     : this.props.location.data
                       ? this.props.location.data.display_name
-                      : <Text
-                        onPress={() => this.getAddress()}
-                      >Cannot get location. Touch to refresh.</Text>
+                      : <Text>Cannot get location. Touch to refresh.</Text>
                 }
               </Text>
             </View>
