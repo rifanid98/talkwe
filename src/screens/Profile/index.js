@@ -22,6 +22,7 @@ class Profile extends Component {
         username: this.props.auth.data.username,
         full_name: this.props.auth.data.full_name,
         email: this.props.auth.data.email,
+        status: this.props.auth.data.status,
         password: ''
       },
       image: null,
@@ -434,6 +435,13 @@ class Profile extends Component {
               placeholder="Email"
               onChangeText={(text) => this.handleOnChange(text, { form: 'email' })}
               defaultValue={this.props.auth.data.email}
+            />
+            <TextInput
+              style={profile.input}
+              onChangeText={text => this.handleOnChange(text, 'status')}
+              placeholder="Status"
+              onChangeText={(text) => this.handleOnChange(text, { form: 'status' })}
+              defaultValue={this.props.auth.data.status}
             />
             <TextInput
               style={profile.input}
