@@ -435,7 +435,10 @@ class Home extends Component {
               </TouchableOpacity>
             </View>
           </View>
-          <ScrollView showsVerticalScrollIndicator={false}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={{ width: '100%' }}
+          >
           {/* friends list */}
           <View style={home.friendsList}>
             <Text style={home.label}>Friends List</Text>
