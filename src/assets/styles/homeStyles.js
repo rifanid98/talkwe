@@ -18,12 +18,13 @@ const homeStyles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: color.primary,
     paddingTop: 24,
-    paddingHorizontal: 24,
+    // paddingHorizontal: 24,
   },
 
   // header
   header: {
     flexDirection: 'row',
+    paddingHorizontal: 24
   },
   title: {
     flex: 1,
@@ -47,6 +48,7 @@ const homeStyles = StyleSheet.create({
   friendsList: {
     width: '100%',
     marginBottom: 24,
+    paddingHorizontal: 24
   },
   label: {
     fontFamily: font.bodyBold,
@@ -81,6 +83,7 @@ const homeStyles = StyleSheet.create({
   messagesList: {
     flex: 1,
     width: '100%',
+    paddingHorizontal: 24
   }, 
   labelWrapper: {
     flexDirection: 'row',
