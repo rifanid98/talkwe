@@ -5,6 +5,7 @@ import { getFriendsList } from 'modules';
 import { connect } from 'react-redux';
 import { LoadingIcon } from 'components';
 import { getDistance } from 'geolib';
+import { BadgeOnlineStatus } from 'components/atoms';
 
 class FriendsList extends Component {
   constructor(props) {
@@ -110,30 +111,28 @@ class FriendsList extends Component {
                           source={{ uri: friend.image }}
                         />
                         {friend.online === 0
-                          ? <View style={{
-                            height: 12,
-                            width: 12,
-                            backgroundColor: 'lightgrey',
-                            borderRadius: 100,
-                            marginRight: 5,
-                            position: 'absolute',
-                            right: -5,
-                            bottom: 5
-                          }}></View>
-                          : <View style={{
-                            height: 12,
-                            width: 12,
-                            backgroundColor: 'lightgreen',
-                            borderRadius: 100,
-                            marginRight: 5,
-                            position: 'absolute',
-                            right: -5,
-                            bottom: 5
-                          }}></View>}
+                          ? <BadgeOnlineStatus
+                              height={12}
+                              width={12}
+                              color="lightgrey"
+                              style={{
+                                position: 'absolute',
+                                right: -5,
+                              bottom: 5
+                            }}/>
+                          : <BadgeOnlineStatus
+                            height={12}
+                            width={12}
+                            color="lightgreen"
+                            style={{
+                              position: 'absolute',
+                              right: -5,
+                              bottom: 5
+                            }} />}
                       </View>
                       <View style={maps.itemContent}>
                         <Text style={maps.name}>{friend.full_name}</Text>
-                        <Text style={maps.status}>My status is here!</Text>
+                        <Text style={maps.status}>{friend.user_status}</Text>
                       </View>
                       <View style={maps.itemAction}>
                         <Text style={maps.distance}>{this._getDistance(friend.location)}</Text>

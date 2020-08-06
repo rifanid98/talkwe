@@ -151,7 +151,7 @@ class UsersList extends Component {
                           </View>
                           <View style={maps.itemContent}>
                             <Text style={maps.name}>{user.full_name}</Text>
-                            <Text style={maps.status}>My status is here!</Text>
+                            <Text style={maps.status}>{user.status}</Text>
                           </View>
                           <View style={maps.itemAction}>
                             <Text style={maps.distance}>{this._getDistance(user.location)} KM</Text>
