@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { Text, View, Image, TouchableOpacity, TextInput, Alert, ScrollView } from 'react-native';
-import NetInfo from "@react-native-community/netinfo";
 import { globalStyles as global, profileStyles as profile } from 'assets';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faArrowLeft, faMapMarkerAlt, faUserCircle, faSignOutAlt, faEnvelope } from '@fortawesome/free-solid-svg-icons'
@@ -8,7 +7,9 @@ import { connect } from 'react-redux';
 import { logout, patchUser, getAddress } from 'modules';
 import { LoadingButton, FlashMessage, LoadingIcon, BadgeOnlineStatus } from 'components';
 import { profileSchema, createFormData, createImageFormData } from 'utils';
-import ImagePicker from 'react-native-image-picker'
+import ImagePicker from 'react-native-image-picker';
+import io from 'socket.io-client';
+import { appConfig } from 'configs';
 
 class Profile extends Component {
   constructor(props) {
@@ -23,7 +24,10 @@ class Profile extends Component {
         password: ''
       },
       image: null,
-      onlineStatus: true
+      isLocationLoading: false,
+      isLogoutLoading: false,
+      isImageLoading: false,
+      locationShare: this.props.auth.data.location_share
     }
   }
 
@@ -32,19 +36,7 @@ class Profile extends Component {
    */
   componentDidMount() {
     this.getAddress()
-    this._subscribe()
-  }
-
-  /**
-   * NetInfo API
-   */
-  _subscribe = () => {
-    NetInfo.addEventListener(state => {
-      console.log("Connection type", state.type);
-      state.isConnected
-        ? this.updateOnlineStatus(true)
-        : this.updateOnlineStatus(false)
-    });
+    this._socketio()
   }
 
   /**
@@ -99,15 +91,26 @@ class Profile extends Component {
     }
   }
   updateUserImage = async () => {
+    this.setState({
+      ...this.state,
+      isImageLoading: true
+    })
     const token = this.props.auth.data.tokenLogin;
     const userID = this.props.auth.data.id;
     const image = this.state.image;
     const formData = createImageFormData(null, image, 'image')
     this.props.patchUser(token, formData, userID)
       .then(res => {
-
+        this.setState({
+          ...this.state,
+          isImageLoading: false
+        })
       })
       .catch(error => {
+        this.setState({
+          ...this.state,
+          isImageLoading: false
+        })
         console.log(error)
         let errorMessage = 'Please try again';
         if (error.response !== undefined) {
@@ -118,6 +121,43 @@ class Profile extends Component {
           }
         }
         Alert.alert('Update Image Failed', errorMessage)
+      });
+  }
+  updateUserLocation = async () => {
+    this.setState({
+      ...this.state,
+      isLocationLoading: true
+    })
+    const token = this.props.auth.data.tokenLogin;
+    const userID = this.props.auth.data.id;
+    const locationShare = this.state.locationShare === 0 ? 1 : 0 ;
+    const obj = {
+      location_share: locationShare
+    }
+    const formData = createFormData(obj)
+    this.props.patchUser(token, formData, userID)
+      .then(res => {
+        this.setState({
+          ...this.state,
+          isLocationLoading: false,
+          locationShare: locationShare
+        })
+      })
+      .catch(error => {
+        this.setState({
+          ...this.state,
+          isLocationLoading: false
+        })
+        console.log(error)
+        let errorMessage = 'Please try again';
+        if (error.response !== undefined) {
+          if (error.response.data) {
+            if (error.response.data.message) {
+              errorMessage = error.response.data.message;
+            }
+          }
+        }
+        Alert.alert('Update Profile Failed', errorMessage)
       });
   }
   getAddress = () => {
@@ -134,6 +174,13 @@ class Profile extends Component {
     
   }
   
+  /**
+   * Socket.IO Services
+   */
+  _socketio = () => {
+    this.socket = io(appConfig.url.origin);
+  }
+
    /**
     * Logics
     */
@@ -156,25 +203,51 @@ class Profile extends Component {
     }
     ImagePicker.showImagePicker(options, response => {
       if (response.uri) {
-        this.setState({
-          ...this.state,
-          image: response
-        }, () => {
-            this.updateUserImage()
-        })
+        if (response.fileSize > 1024*1024*3) {
+          Alert.alert('Image size is too large.', 'The maximum size is 3 MB. Please choose another image.')
+        } else {
+          this.setState({
+            ...this.state,
+            image: response
+          }, () => {
+              this.updateUserImage()
+          })
+        }
       }
     })
   }
   logout = () => {
-    this.props.logout()
-  }
-  updateOnlineStatus = (onlineStatus) => {
     this.setState({
       ...this.state,
-      onlineStatus: onlineStatus
+      isLogoutLoading: true
     })
+    const token = this.props.auth.data.tokenLogin;
+    const user_id = this.props.auth.data.id;
+    const data = {
+      online: 0
+    }
+    const formData = createFormData(data)
+    this.props.patchUser(token, formData, user_id)
+      .then((res) => {
+        this.setState({
+          ...this.state,
+          isLogoutLoading: false
+        }, () => {
+            this.socket.emit('refresh', {});
+            this.props.logout()
+        })
+      })
+      .catch((error) => {
+        this.setState({
+          ...this.state,
+          isLogoutLoading: false
+        })
+        console.log(error);
+        error.response.data.message
+          ? Alert.alert('Failed', error.response.data.message)
+          : Alert.alert('Failed', 'Update Location Failed.')
+      })
   }
-
   /**
    * DOM Render
    */
@@ -196,7 +269,7 @@ class Profile extends Component {
               style={profile.profile}
             >
               {
-                this.props.users.isLoading
+                this.state.isImageLoading
                   ? <View style={[profile.image, {
                     backgroundColor: 'gray',
                     flexDirection: 'row',
@@ -222,9 +295,7 @@ class Profile extends Component {
                 justifyContent: 'center',
                 alignItems: 'center'
               }}>
-                {this.state.onlineStatus
-                  ? <BadgeOnlineStatus height={12} width={12} color="lightgreen" style={{ marginRight: 10 }} />
-                  : <BadgeOnlineStatus height={12} width={12} color="lightgrey" style={{ marginRight: 10 }} />}
+                <BadgeOnlineStatus height={12} width={12} color="lightgreen" style={{ marginRight: 10 }} />
                 <Text style={profile.name}>{this.props.auth.data.full_name}</Text>
               </View>
               <Text style={profile.email}>
@@ -262,15 +333,26 @@ class Profile extends Component {
               {/* location setting */}
               <TouchableOpacity
                 style={profile.item}
-                onPress={() => this.setState({ ...this.state, edit: !this.state.edit })}
+                onPress={() => this.updateUserLocation()}
               >
-                <Text style={profile.itemIcon}>
-                  <FontAwesomeIcon icon={faUserCircle} size={20} />
-                </Text>
+                {this.state.isLocationLoading
+                  ? <LoadingIcon type={2} style={{ height: 30, width: 30 }} />
+                  : <Text style={profile.itemIcon}>
+                      <FontAwesomeIcon icon={faMapMarkerAlt} size={20} />
+                    </Text>}
+                
                 <View style={profile.itemContent}>
-                  <Text style={profile.itemName}>Location Off</Text>
-                  <Text style={profile.itemInfo}>Turn off location share</Text>
-                  <Text style={profile.itemInfo}>Turn on location share</Text>
+                  {
+                    this.state.locationShare === 1
+                      ? <>
+                          <Text style={profile.itemName}>Location On</Text>
+                          <Text style={profile.itemInfo}>Other users can see your location</Text>
+                        </>
+                      : <>
+                          <Text style={profile.itemName}>Location Off</Text>
+                          <Text style={profile.itemInfo}>Other users cannot see your location</Text>
+                        </>
+                  }
                 </View>
               </TouchableOpacity>
 
@@ -279,13 +361,11 @@ class Profile extends Component {
                 style={profile.item}
                 onPress={() => this.logout()}
               >
-                <Text style={profile.itemIcon}>
-                  {
-                    this.props.auth.isLoading
-                      ? <LoadingIcon />
-                      : <FontAwesomeIcon icon={faSignOutAlt} size={20} />
-                  }
-                </Text>
+                {this.state.isLogoutLoading
+                  ? <LoadingIcon type={2} style={{ height: 30, width: 30 }} />
+                  : <Text style={profile.itemIcon}>
+                    <FontAwesomeIcon icon={faSignOutAlt} size={20} />
+                  </Text>}
                 <View style={profile.itemContent}>
                   <Text style={profile.itemName}>Logout</Text>
                   <Text style={profile.itemInfo}>End your session</Text>
@@ -294,6 +374,13 @@ class Profile extends Component {
             </View>
           </ScrollView>
           {this.state.edit && <View style={profile.form}>
+            <Text style={{
+              width: '100%', 
+              padding: 12,
+              textAlign: 'center'
+            }}
+              onPress={() => this.setState({ ...this.state, edit: !this.state.edit })}
+            >Close</Text>
             <TextInput
               style={profile.input}
               onChangeText={text => this.handleOnChange(text, 'username')}
