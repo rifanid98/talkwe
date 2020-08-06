@@ -19,4 +19,5 @@ export const registerSchema = Joi.object({
 export const profileSchema = Joi.object({
   full_name: Joi.string().min(3).max(30).required(),
   email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
+  status: Joi.string().trim().min(3).required(),
 });
