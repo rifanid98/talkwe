@@ -435,6 +435,7 @@ class Home extends Component {
               </TouchableOpacity>
             </View>
           </View>
+          <ScrollView showsVerticalScrollIndicator={false}>
           {/* friends list */}
           <View style={home.friendsList}>
             <Text style={home.label}>Friends List</Text>
@@ -442,7 +443,7 @@ class Home extends Component {
               style={home.friendsListItems}
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{
+                contentContainerStyle={{
                 paddingRight: 25
               }}
             >
@@ -498,7 +499,7 @@ class Home extends Component {
                 && <Text style={[home.messagesListItemInfoCircle, home.labelBadge]}>{this.state.unreadMessages.length}</Text> 
               }
             </View>
-            <ScrollView
+            <View
               style={home.messagesListItems}
             >
               {
@@ -531,8 +532,10 @@ class Home extends Component {
                   )
                 })
               }
-            </ScrollView>
+            </View>
           </View>
+          </ScrollView>
+          {/* Add Chat Button */}
           <Text 
             style={home.addMessageButton}
             onPress={() => this.props.navigation.navigate('addChat')}
