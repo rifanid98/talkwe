@@ -490,7 +490,7 @@ class Home extends Component {
                         style={[home.friendsListItem, global.relative]}>
                         <Image
                           style={home.friendsListItemImage}
-                          source={{ uri: friend.image }}
+                          source={{ uri: appConfig.url.assets+ '/'+ friend.image }}
                         />
                         <Text style={home.friendsListItemName}>{friend.full_name.split(' ')[0]}</Text>
                         <BadgeOnlineStatus
@@ -513,7 +513,7 @@ class Home extends Component {
                           <Image
                             key={index}
                             style={home.friendsListItemImage}
-                            source={{ uri: friend.image }}
+                            source={{ uri: appConfig.url.assets+ '/'+ friend.image }}
                           />
                           <Text style={home.friendsListItemName}>{friend.full_name.split(' ')[0]}</Text>
                         </View>
@@ -545,14 +545,14 @@ class Home extends Component {
                       onPress={() => this.goToChat({
                           id: message.sender_id === this.props.auth.data.id ? message.receiver_id : message.sender_id,
                           full_name: message.full_name,
-                          image: message.image,
+                          image: appConfig.url.assets + '/' + message.image,
                           online: message.online
                         })}
                       onLongPress={() => this.deleteMessage(message.sender_id, message.receiver_id)}
                     >
                       <Image
                         style={home.messagesListItemImage}
-                        source={{ uri: message.image }}
+                        source={{ uri: appConfig.url.assets+ '/'+ message.image }}
                       />
                       <View style={home.messagesListItemContent}>
                         <Text style={home.messagesListItemContentTitle}>{message.full_name.split(' ')[0]}</Text>

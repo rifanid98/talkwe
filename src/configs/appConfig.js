@@ -6,7 +6,7 @@ const constants = {
   dev: {
     url: {
       api: API_URL,
-      assets: '../assets',
+      assets: ORIGIN + '/talkwe/images',
       origin: ORIGIN,
     },
   },

@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { LoadingIcon } from 'components';
 import { getDistance } from 'geolib';
 import { BadgeOnlineStatus } from 'components/atoms';
+import { appConfig } from 'configs';
 
 class FriendsList extends Component {
   constructor(props) {
@@ -108,7 +109,7 @@ class FriendsList extends Component {
                       <View style={global.relative}>
                         <Image
                           style={maps.itemImage}
-                          source={{ uri: friend.image }}
+                          source={{ uri: appConfig.url.assets + '/' + friend.image }}
                         />
                         {friend.online === 0
                           ? <BadgeOnlineStatus

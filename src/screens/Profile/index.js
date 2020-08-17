@@ -321,7 +321,7 @@ class Profile extends Component {
                     : <TouchableOpacity
                       onPress={() => this.handleChoosePhoto()}
                     >
-                      <Image style={profile.image} source={{ uri: this.props.auth.data.image }} resizeMethod="resize" />
+                      <Image style={profile.image} source={{ uri: appConfig.url.assets + '/' + this.props.auth.data.image }} resizeMethod="resize" />
                     </TouchableOpacity>
               }
               <View style={{

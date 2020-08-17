@@ -93,7 +93,7 @@ class FriendProfile extends Component {
                       <>
                         <Image
                           style={profile.image}
-                          source={{ uri: this.props.users.data[0].image }}
+                          source={{ uri: appConfig.url.assets + '/' + this.props.users.data[0].image }}
                         />
                         <View style={{
                           flexDirection: 'row',
