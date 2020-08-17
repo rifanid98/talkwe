@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import { Text, View, Image, TouchableOpacity, Alert, Platform, PermissionsAndroid, AppState } from 'react-native';
 import NetInfo from "@react-native-community/netinfo";
 import { globalStyles as global, homeStyles as home, colorScheme as color} from 'assets';
