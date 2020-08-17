@@ -1,12 +1,13 @@
-import { API_URL, ACTIVE_CONFIG } from '@env';
+import { API_URL, ACTIVE_CONFIG, ORIGIN } from "configs/env";
+
 const activeConfig = ACTIVE_CONFIG;
 // const origin = window.location.origin;
 const constants = {
   dev: {
     url: {
-      api: `http://192.168.42.15:3000/talkwe/api/v1`,
+      api: API_URL,
       assets: '../assets',
-      origin: `http://192.168.42.15:3000`,
+      origin: ORIGIN,
     },
   },
 

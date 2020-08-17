@@ -1,5 +1,5 @@
 import appConfig from './appConfig';
-import { LOCATION_IQ_PRIVATE_KEY } from '@env'
+import { LOCATION_IQ_PRIVATE_KEY } from 'configs/env';
 
 const apiUri = {
   auth: {

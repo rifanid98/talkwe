@@ -1,4 +1,4 @@
-import { ACTIVE_THEME } from '@env';
+import { ACTIVE_THEME } from "configs/env";
 const colors = {
   primary: {
     primary: '#FFFFFF',

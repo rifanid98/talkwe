@@ -14,7 +14,8 @@ import {
   setLocation,
   getFriendsRequest,
   getNewNotification,
-  addNotification
+  addNotification,
+  deleteConversation,
 } from 'modules';
 import io from 'socket.io-client';
 import { appConfig } from 'configs';
@@ -72,6 +73,7 @@ class Home extends Component {
    */
   _socketio = () => {
     this.socket = io(appConfig.url.origin);
+    console.log(appConfig.url.origin);
     this.socket.on('privateMessage', (data) => {
       data.sender_id === this.props.auth.data.id && this.getMessagesList()
       data.receiver_id === this.props.auth.data.id && this.setUnreadMessages(data)
@@ -88,11 +90,8 @@ class Home extends Component {
       }
     });
     this.socket.on('refresh', () => {
-      this.getMessagesList()
-      this.getFriendsList()
-      this.getMessageStatus()
-      this.getFriendsRequest()
-      this.getNewNotification()
+      console.log('refresh');
+      this.refresh();
     });
   }
 
@@ -120,6 +119,8 @@ class Home extends Component {
           this.setState({
             ...this.state,
             friendsList: this.props.friends.data
+          }, () => {
+              console.log(this.props.friends.data);
           })
         }).catch((error) => {
           console.log(error, `get friends lists failed`)
@@ -360,6 +361,35 @@ class Home extends Component {
       this.updateOnlineStatus(1)
     }
   };
+  deleteMessage = (id1, id2) => {
+    const user = this.props.auth.data;
+    let id = id1;
+    if (id === user.id) id = id2;
+    const token = user.tokenLogin;
+    Alert.alert("", "Delete Conversation?", [
+      { text: "Cancel", style: "cancel" },
+      { text: "OK", onPress: () => {
+        Alert.alert("Are You Sure?", "This action can't be undone!.", [
+          {text: "No", style: "cancel"},
+          {
+            text: "Yes", onPress: () => {
+              this.props.deleteConversation(token, user.id, id)
+                .then(res => {
+                  
+                }).catch(err => {
+                  console.log(err);
+                });
+            }
+          }], { cancelable: false });    
+      } }], { cancelable: false });
+  }
+  refresh = () => {
+    this.getMessagesList()
+    this.getFriendsList()
+    this.getMessageStatus()
+    this.getFriendsRequest()
+    this.getNewNotification()
+  }
 
 
   /**
@@ -507,7 +537,7 @@ class Home extends Component {
             >
               {
                 (this.state.messagesList && this.state.messagesList.length > 0)
-                && this.state.messagesList.map((message, index) => {
+                  && this.state.messagesList.map((message, index) => {
                   return (
                     <TouchableOpacity
                       key={index}
@@ -518,6 +548,7 @@ class Home extends Component {
                           image: message.image,
                           online: message.online
                         })}
+                      onLongPress={() => this.deleteMessage(message.sender_id, message.receiver_id)}
                     >
                       <Image
                         style={home.messagesListItemImage}
@@ -571,7 +602,8 @@ const mapDispatchToProps = {
   patchUser,
   getFriendsRequest,
   getNewNotification,
-  addNotification
+  addNotification,
+  deleteConversation
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

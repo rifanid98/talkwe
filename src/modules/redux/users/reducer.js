@@ -8,6 +8,7 @@ const initialState = {
 };
 
 const users = (state = initialState, action) => {
+  console.log(action);
   switch (action.type) {
     case actionType.GET_USERS_PENDING:
       return {
@@ -45,8 +46,6 @@ const users = (state = initialState, action) => {
         errorMsg: 'Data Rejected',
       };
     case actionType.ADD_USER_FULFILLED:
-      console.log(action.payload, 'ini data payload');
-      console.log(state);
       return {
         ...state,
         isLoading: false,
@@ -116,6 +115,27 @@ const users = (state = initialState, action) => {
         isError: false,
         errorMsg: '',
       };
+    
+    // case actionType.DELETE_CONVERSATION_PENDING:
+    //   return {
+    //     ...state,
+    //     isLoading: true,
+    //     isError: false,
+    //   };
+    // case actionType.DELETE_CONVERSATION_REJECTED:
+    //   return {
+    //     ...state,
+    //     isLoading: false,
+    //     isError: true,
+    //     errorMsg: 'Data Rejected',
+    //   };
+    // case actionType.DELETE_CONVERSATION_FULFILLED:
+    //   return {
+    //     ...state,
+    //     isLoading: false,
+    //     isError: false,
+    //     errorMsg: '',
+    //   };
 
     default:
       return state;

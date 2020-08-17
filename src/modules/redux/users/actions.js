@@ -83,3 +83,15 @@ export const getUsersList = (token, id) => {
     }),
   };
 };
+export const deleteConversation = (token, id1, id2) => {
+  return {
+    type: actionType.DELETE_CONVERSATION,
+    payload: Axios({
+      method: 'DELETE',
+      url: `${apiUri.users}/${id1}/messages/${id2}`,
+      headers: {
+        authorization: token,
+      },
+    }),
+  };
+};
