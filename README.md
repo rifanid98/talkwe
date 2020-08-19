@@ -80,7 +80,7 @@ By default, maps screen will showing user location. There are two menus :
 
 ## Usage
 
-- For common users, you can download the release apk at [google drive]()
+- For common users, you can download the release apk at [google drive](https://drive.google.com/file/d/1w-P1pe_6xpP5h8b04efdglmUyLcjd3tv/view?usp=sharing)
 - For developer, you can continue to follow the instructions bellow.
 
 ### Prerequisites
