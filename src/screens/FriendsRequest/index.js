@@ -104,7 +104,7 @@ class FriendsRequest extends Component {
                     >
                       <Image
                         style={chat.contactImage}
-                        source={{ uri: friend.image }}
+                        source={{ uri: appConfig.url.assets + '/' + friend.image }}
                         resizeMethod='resize'
                       />
                       <View style={chat.contactInfo}>

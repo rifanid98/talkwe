@@ -7,6 +7,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
 import { getFriendsList } from 'modules';
 import { BadgeOnlineStatus } from 'components';
+import { appConfig } from 'configs';
 
 class AddChat extends Component {
   constructor(props) {
@@ -113,14 +114,14 @@ class AddChat extends Component {
                       onPress={() => this.goToChat({
                         id: friend.user_id2 === this.props.auth.data.id ? friend.user_id1 : friend.user_id2,
                         full_name: friend.full_name,
-                        image: friend.image,
+                        image: appConfig.url.assets + '/' + friend.image,
                         online: friend.online
                       })}
                     >
                       <View style={global.relative}>
                         <Image
                           style={chat.contactImage}
-                          source={{ uri: friend.image }}
+                          source={{ uri: appConfig.url.assets + '/' + friend.image }}
                           resizeMethod='resize'
                         />
                         {friend.online === 1

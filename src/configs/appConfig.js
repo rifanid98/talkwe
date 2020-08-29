@@ -6,7 +6,7 @@ const constants = {
   dev: {
     url: {
       api: API_URL,
-      assets: '../assets',
+      assets: ORIGIN + '/talkwe/images',
       origin: ORIGIN,
     },
   },
@@ -14,8 +14,8 @@ const constants = {
   prod: {
     url: {
       api: API_URL,
-      assets: '../assets',
-      origin: `http://192.168.43.81:3000`,
+      assets: ORIGIN + '/talkwe/images',
+      origin: ORIGIN,
     },
   },
 };

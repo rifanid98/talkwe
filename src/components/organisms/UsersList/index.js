@@ -7,6 +7,7 @@ import { LoadingIcon, BadgeOnlineStatus } from 'components';
 import { getDistance } from 'geolib';
 import { addFriend } from 'modules'
 import { createFormData } from 'utils';
+import { appConfig } from 'configs';
 
 String.prototype.capitalize = function () {
   return this.charAt(0).toUpperCase() + this.slice(1);
@@ -135,7 +136,7 @@ class UsersList extends Component {
                           <View style={global.relative}>
                             <Image
                               style={maps.itemImage}
-                              source={{ uri: user.image }}
+                              source={{ uri: appConfig.url.assets + '/' + user.image }}
                             />
                             {user.online === 0
                               ? <BadgeOnlineStatus height={12} width={12} color="lightgrey" style={{
