@@ -93,7 +93,7 @@ class Login extends Component {
                   </Text>
                 )
             }
-            <Text style={styles.p}>Forgot Password ?</Text>
+            {/* <Text style={styles.p}>Forgot Password ?</Text> */}
           </View>
           <View style={[styles.footer, styles.absolute]}>
             <Text style={styles.footerText}>Don't have an account?</Text>
