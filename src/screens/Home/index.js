@@ -73,7 +73,6 @@ class Home extends Component {
    */
   _socketio = () => {
     this.socket = io(appConfig.url.origin);
-    console.log(appConfig.url.origin);
     this.socket.on('privateMessage', (data) => {
       data.sender_id === this.props.auth.data.id && this.getMessagesList()
       data.receiver_id === this.props.auth.data.id && this.setUnreadMessages(data)
@@ -90,7 +89,6 @@ class Home extends Component {
       }
     });
     this.socket.on('refresh', () => {
-      console.log('refresh');
       this.refresh();
     });
   }
@@ -100,7 +98,6 @@ class Home extends Component {
    */
   _subscribe = () => {
     NetInfo.addEventListener(state => {
-      console.log("Connection type", state.type);
       state.isConnected
         ? this.updateOnlineStatus(1)
         : this.updateOnlineStatus(0)
@@ -119,8 +116,6 @@ class Home extends Component {
           this.setState({
             ...this.state,
             friendsList: this.props.friends.data
-          }, () => {
-              console.log(this.props.friends.data);
           })
         }).catch((error) => {
           console.log(error, `get friends lists failed`)
@@ -339,7 +334,6 @@ class Home extends Component {
   }
   addNotification = (data) => {
     const id = this.props.auth.data.id;
-    console.log(id)
     if (id === null) return;
     const notifData = {
       user_id: id,

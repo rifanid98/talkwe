@@ -46,8 +46,6 @@ const friends = (state = initialState, action) => {
         errorMsg: 'Data Rejected',
       };
     case actionType.ADD_FRIEND_FULFILLED:
-      console.log(action.payload, 'ini data payload');
-      console.log(state);
       return {
         ...state,
         isLoading: false,

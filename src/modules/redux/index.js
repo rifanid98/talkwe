@@ -55,8 +55,8 @@ const persistedReducer = persistReducer(persistConfig, reducer);
  */
 export const store = createStore(
   persistedReducer,
-  // applyMiddleware(reduxPromise)
-  applyMiddleware(reduxPromise, logger),
+  applyMiddleware(reduxPromise)
+  // applyMiddleware(reduxPromise, logger),
 );
 
 /**
