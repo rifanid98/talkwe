@@ -9,17 +9,17 @@
 
 ## :memo: Table Of Content
 
-- [Introduction](https://github.com/rifanid98/talkwe#introduction)
-- [Features](https://github.com/rifanid98/talkwe#features)
-- [Screenshots](https://github.com/rifanid98/talkwe#screenshots)
-- [Usage](https://github.com/rifanid98/talkwe#usage)
-  - [Prerequisites](https://github.com/rifanid98/talkwe#prerequisites)
-  - [Installing](https://github.com/rifanid98/talkwe#installing-to-your-local-machine)
-- [Contributing](https://github.com/rifanid98/talkwe#contributing-to-this-project)
-- [Contributors](https://github.com/rifanid98/talkwe#contributors)
-- [Related Project](https://github.com/rifanid98/talkwe#related)
-- [Contact](https://github.com/rifanid98/talkwe#contact)
-- [License](https://github.com/rifanid98/talkwe#license)
+- [Introduction](#introduction)
+- [Features](#features)
+- [Screenshots](#screenshots)
+- [Usage](#usage)
+  - [Prerequisites](#prerequisites)
+  - [Installing](#installing-to-your-local-machine)
+- [Contributing](#contributing-to-this-project)
+- [Contributors](#contributors)
+- [Related Project](#related)
+- [Contact](#contact)
+- [License](#license)
 
 ## Introduction
 
