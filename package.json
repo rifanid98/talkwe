@@ -26,7 +26,7 @@
     "@react-navigation/material-top-tabs": "^5.2.15",
     "@react-navigation/native": "^5.7.1",
     "@react-navigation/stack": "^5.7.1",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "babel-plugin-dotenv-import": "^2.1.0",
     "geolib": "^3.3.1",
     "jwt-decode": "^2.2.0",
